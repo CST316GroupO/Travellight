@@ -7,5 +7,6 @@
     <string name="title_activity_logon">LogonActivity</string>
     <string name="title_activity_main_screen">MainScreen</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_events_bag">eventsBag</string>
 
 </resources>
