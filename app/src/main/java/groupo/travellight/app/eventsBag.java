@@ -1,5 +1,10 @@
 package groupo.travellight.app;
 
+import android.content.ClipData;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Point;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -17,6 +22,12 @@ public class eventsBag extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_events_bag);
+
+        findViewById(R.id.textSocks).setOnLongClickListener(longListen);
+        findViewById(R.id.textShoes).setOnLongClickListener(longListen);
+        findViewById(R.id.textShirts).setOnLongClickListener(longListen);
+        findViewById(R.id.textPants).setOnLongClickListener(longListen);
+        findViewById(R.id.textUnderwear).setOnLongClickListener(longListen);
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
@@ -62,6 +73,52 @@ public class eventsBag extends ActionBarActivity {
         }
     }
 
+    /*
+        Drag objects
+     */
+    View.OnLongClickListener longListen = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View view)
+        {
+            DragShadow dragShadow = new DragShadow(view);
 
+            ClipData data = ClipData.newPlainText("","");
+            view.startDrag(data, dragShadow, view, 0);
+            return false;
+        }
+    };
+
+    /*
+        The shadow you see when you start dragging
+     */
+    private class DragShadow extends View.DragShadowBuilder
+    {
+        ColorDrawable greyBox;
+
+        public DragShadow(View view)
+        {
+            super(view);
+            greyBox = new ColorDrawable(Color.LTGRAY);
+        }
+
+        public void onDrawShadow(Canvas canvas)
+        {
+            greyBox.draw(canvas);
+        }
+
+        public void onProvideShadowMetrics(Point shadowSize, Point shadowTouchPoint)
+        {
+            View v = getView();
+
+            int height = (int)v.getHeight() / 2;
+            int width = (int)v.getWidth() / 2;
+
+            greyBox.setBounds(0, 0, width, height);
+
+            shadowSize.set(width, height);
+
+            shadowTouchPoint.set((int)width / 2, (int)height / 2);
+        }
+    }
 
 }
