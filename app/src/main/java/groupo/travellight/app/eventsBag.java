@@ -9,12 +9,14 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
+import android.widget.TextView;
 
 public class eventsBag extends ActionBarActivity {
 
@@ -28,6 +30,8 @@ public class eventsBag extends ActionBarActivity {
         findViewById(R.id.textShirts).setOnLongClickListener(longListen);
         findViewById(R.id.textPants).setOnLongClickListener(longListen);
         findViewById(R.id.textUnderwear).setOnLongClickListener(longListen);
+
+        findViewById(R.id.textTarget).setOnDragListener((dragListener));
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
@@ -85,6 +89,29 @@ public class eventsBag extends ActionBarActivity {
             ClipData data = ClipData.newPlainText("","");
             view.startDrag(data, dragShadow, view, 0);
             return false;
+        }
+    };
+
+    View.OnDragListener dragListener = new View.OnDragListener() {
+        @Override
+        public boolean onDrag(View view, DragEvent dragEvent) {
+            int draggingEvent = dragEvent.getAction();
+            TextView dropText = (TextView) view;
+
+            switch(draggingEvent)
+            {
+                case DragEvent.ACTION_DRAG_ENTERED:
+                    //dropText.setTextColor(Color.GREEN);
+                    break;
+                case DragEvent.ACTION_DRAG_EXITED:
+                    //dropText.setTextColor(Color.RED);
+                    break;
+                case DragEvent.ACTION_DROP:
+                    TextView draggedText = (TextView)dragEvent.getLocalState();
+                    dropText.setText(draggedText.getText());
+                    break;
+            }
+            return true;
         }
     };
 
