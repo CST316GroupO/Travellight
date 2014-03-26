@@ -10,11 +10,10 @@
 
 
     <ListView
-        android:layout_width="wrap_content"
+        android:id="@+id/list"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@android:id/list"
-        android:fastScrollAlwaysVisible="false"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:divider="#b5b5b5"
+        android:dividerHeight="1dp"
+        android:listSelector="@drawable/yelp_list_selector" />
 </RelativeLayout>
