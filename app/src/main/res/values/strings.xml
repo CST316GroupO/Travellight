@@ -47,4 +47,6 @@
     <string name="title_activity_events_bag">EventsBag</string>
     <string name="My_Events">My Events</string>
 
+    <!-- Yelp Results Strings -->
+    <string name="yelp_filtersettings">Filters</string>
 </resources>
