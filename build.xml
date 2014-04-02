@@ -47,14 +47,20 @@
             <dirset dir="./app/src/" includes="Travellight"/>
         </subant>
     </target>
+    <!-- BUILD -->
+    <target name="build.test">
+        <subant target="debug" genericantfile="./tests/build.xml">
+            <dirset dir="./tests/src/" includes="mainTest"/>
+        </subant>
+    </target>
 
     <!-- RUN CLIENT TESTS -->
     <target name="run.app">
-        <subant target="emma" genericantfile="./app/src/main/build.xml">
-            <dirset dir="./app/src/" includes="Travellight"/>
+        <subant target="emma" genericantfile="./tests/build.xml">
+            <dirset dir="./tests/src/" includes="mainTest"/>
         </subant>
-        <subant target="test" genericantfile="./app/src/main/build.xml">
-            <dirset dir="./app/src/" includes="Travellight"/>
+        <subant target="test" genericantfile="./tests/build.xml">
+            <dirset dir="./tests/src/" includes="mainTest"/>
         </subant>
     </target>
 
