@@ -158,6 +158,9 @@ public class EventsBag extends ActionBarActivity {
             Events currentEvent = myEvents.get(position);
 
             //Name:
+            //possible bug with itemView.findViewById(R.id.eventName) where it can throw a null pointer exception
+            //bug fixed with assert itemView != null statement
+            assert itemView != null;
             TextView eventNameText = (TextView) itemView.findViewById(R.id.event_Name);
             eventNameText.setText(currentEvent.getName());
 
