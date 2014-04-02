@@ -48,13 +48,13 @@
         </subant>
     </target>
 
-    <!-- RUN CLIENT TESTS -->
+    <!-- RUN TESTS -->
     <target name="run.app">
         <subant target="emma" genericantfile="./app/src/main/build.xml">
-            <dirset dir="./app/src/" includes="Travellight"/>
+            <dirset dir="./app/src/" includes="mainTest"/>
         </subant>
         <subant target="test" genericantfile="./app/src/main/build.xml">
-            <dirset dir="./app/src/" includes="Travellight"/>
+            <dirset dir="./app/src/" includes="mainTest"/>
         </subant>
     </target>
 

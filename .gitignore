@@ -33,4 +33,3 @@ gradle.properties
 *~
 *.swp
 proguard-project.txt
-build.gradle
