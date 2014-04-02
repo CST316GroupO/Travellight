@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_home"
+        android:title="Home"
+        android:showAsAction="always" />
+    <item android:id="@+id/action_events_bag"
+        android:title="Events Bag"
+        android:showAsAction="always"/>
+    <item android:id="@+id/action_packing_list"
+        android:title="Packing List"
+        android:showAsAction="always"/>
+    <item android:id="@+id/action_yelp"
+        android:title="Yelp Search"
+        android:showAsAction="always"/>
+    <item   android:id="@+id/action_settings"
+        android:title="Settings"
+        android:showAsAction="always"/>
+    <item   android:id="@+id/action_notifications "
+        android:title="Notifications"
+        android:showAsAction="always"/>
+    <item   android:id="@+id/action_help"
+        android:title="Help"
+        android:showAsAction="always"/>
+
+</menu><!-- From: file:/home/brant/workspace/Travellight/app/src/main/res/menu/actionbar_actions.xml -->

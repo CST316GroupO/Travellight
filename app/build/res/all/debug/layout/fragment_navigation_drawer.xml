@@ -1,0 +1,19 @@
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ListView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:choiceMode="singleChoice"
+        android:divider="@android:color/transparent"
+        android:id="@+id/left_drawer"
+        android:dividerHeight="0dp"
+        android:background="#cccc"
+        tools:context=".Trip2Activity" />
+
+</android.support.v4.widget.DrawerLayout>
+<!-- From: file:/home/brant/workspace/Travellight/app/src/main/res/layout/fragment_navigation_drawer.xml -->

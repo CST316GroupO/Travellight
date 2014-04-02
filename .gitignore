@@ -32,3 +32,5 @@ gradle.properties
 *.ipr
 *~
 *.swp
+proguard-project.txt
+build.gradle

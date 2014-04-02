@@ -1,0 +1,62 @@
+<!-- From: file:/home/brant/workspace/Travellight/app/src/main/AndroidManifest.xml --><manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="1.0" package="groupo.travellight.app">
+    <uses-sdk android:minSdkVersion="13" android:targetSdkVersion="19"/>
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.USE_CREDENTIALS"/>
+
+    <application android:allowBackup="true" android:icon="@drawable/travellight" android:label="@string/app_name" android:theme="@style/Theme.AppCompat.Light">
+        <uses-sdk android:minSdkVersion="19"/>
+
+        <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version"/>
+
+
+        <activity android:label="@string/app_name" android:name="groupo.travellight.app.LoginActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:label="MainScreen" android:name="groupo.travellight.app.MainScreen">
+
+            <action android:name="android.intent.action.MAIN"/>
+
+            <category android:name="android.intent.category.LAUNCHER"/>
+        </activity>
+
+        <activity android:label="HelpActivity" android:name="groupo.travellight.app.HelpActivity">
+        </activity>
+
+        <activity android:label="Notifications" android:name="groupo.travellight.app.NotificationsActivity">
+        </activity>
+        <activity android:label="EventsBagActivity" android:name="groupo.travellight.app.EventsBag">
+        </activity>
+
+        <activity android:label="@string/app_name" android:launchMode="singleTop" android:name="groupo.travellight.app.YelpResultsActivity">
+
+            <!-- Setup the search configuration -->
+            <meta-data android:name="android.app.searchable" android:resource="@xml/searchable"/>
+
+            <!-- Declare the intent for popup upon callback -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH"/>
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+            </intent-filter>
+
+        </activity>
+        <activity android:label="Packing List" android:name="groupo.travellight.app.PackingListActivity">
+        </activity>
+
+        <activity android:icon="@drawable/ic_action_trip" android:label="Trips" android:name="groupo.travellight.app.TripActivity">
+            <!-- enable the search widget to send searches to YelpResultsActivity -->
+            <meta-data android:name="android.app.default_searchable" android:value=".YelpResultsActivity"/>
+        </activity>
+    </application>
+
+
+</manifest>
