@@ -1,44 +1,52 @@
 package groupo.travellight.app;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
-
 /**
  * Created by Joseph Bandola on 2/25/14.
+ * This Activity handles the Basic Packing List Screen, showing the viewer their list
+ * TODO: Implement a New XML Parser to Handle the New 'Packing Item' Objects, and load them to this list (WIP)
+ *          -Currently Working on This on a Seprate Project
  */
-public class PackingListActivity extends ActionBarActivity {
-    ListView listView;
+public class PackingListActivity extends Activity {
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_packing_list);
+    ListView listPackingItems;
 
-        listView = (ListView) findViewById(R.id.pack_list);
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_packing_list);
 
-        //Default List Items for the Packing List
-        String[] values = new String[] {
-                "Passport and Identification",
-                "Money",
-                "Necessary Medications",
-                "Clothing",
-                "International Cell Phone + Charger",
-                "Dental and Bodily Hygine Products",
-                "Destination Travel Guide",
-                "Reading Books",
-                "Music Player and/or Personal Electronics",
-        };
+            //Static Packing XML Loader, to Be Replaced by an XML Parse and Load
+            //TODO: Implement a new XML Parser to load a fancier looking list.
+            listPackingItems = (ListView) findViewById(R.id.packingListView);
+            listPackingItems.setAdapter(new ArrayAdapter<>(PackingListActivity.this, android.R.layout.simple_list_item_1, getResources().getStringArray(R.array.packingList)));
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                this,
-                android.R.layout.simple_list_item_1,
-                android.R.id.text1,
-                values);
+            //Handles 'add a new item' button
+            final Button button_Add = (Button) findViewById(R.id.button_addPacking);
+            button_Add.setOnClickListener(new Button.OnClickListener() {
+                public void onClick(View v)
+                {
+                    Intent i = new Intent(PackingListActivity.this, PackingListEdit.class);
+                    startActivity(i);
+                }
+            });
 
-        listView.setAdapter(adapter);
-    }
+            //Handles 'return to hub' button.
+            final Button button_HubReturn = (Button) findViewById(R.id.button_HubReturn);
+            button_HubReturn.setOnClickListener(new Button.OnClickListener() {
+                public void onClick(View v)
+                {
+                    Intent i = new Intent(PackingListActivity.this, MainScreen.class);
+                    startActivity(i);
+                }
+            });
+
+        }
 
 }
-
