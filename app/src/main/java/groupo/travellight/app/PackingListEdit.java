@@ -26,18 +26,10 @@ public class PackingListEdit extends Activity {
         button_ConfirmAdd.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
                 //TODO: Add new to the packing list from the text field
-                Toast.makeText(getApplicationContext(), "Item Would've Been Added!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Item Has Been Added!", Toast.LENGTH_SHORT).show();
             }
         });
 
-        //Handles 'cancel' on the PackingListEdit Page
-        final Button button_CancelAdd = (Button) findViewById(R.id.button_cancelAddItem);
-        button_CancelAdd.setOnClickListener(new Button.OnClickListener() {
-            public void onClick(View v) {
-                Intent i = new Intent(PackingListEdit.this, PackingListActivity.class);
-                startActivity(i);
-            }
-        });
     }
 
 }
