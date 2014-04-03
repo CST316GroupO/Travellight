@@ -41,8 +41,8 @@
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Return To Hub"
-        android:id="@+id/button_HubReturn"
+        android:text="Save This List"
+        android:id="@+id/button_savePacking"
         android:layout_gravity="right"
         android:layout_alignTop="@+id/button_addPacking"
         android:layout_alignParentRight="true"
@@ -55,6 +55,6 @@
         android:layout_gravity="center_horizontal"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_below="@+id/button_HubReturn" />
+        android:layout_below="@+id/button_savePacking" />
 
 </RelativeLayout>

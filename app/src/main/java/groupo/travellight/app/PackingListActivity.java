@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
+
 /**
  * Created by Joseph Bandola on 2/25/14.
  * This Activity handles the Basic Packing List Screen, showing the viewer their list
@@ -15,7 +17,7 @@ import android.widget.ListView;
  */
 public class PackingListActivity extends Activity {
 
-    ListView listPackingItems;
+    private ListView listPackingItems;
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {
@@ -37,13 +39,13 @@ public class PackingListActivity extends Activity {
                 }
             });
 
-            //Handles 'return to hub' button.
-            final Button button_HubReturn = (Button) findViewById(R.id.button_HubReturn);
-            button_HubReturn.setOnClickListener(new Button.OnClickListener() {
+            //Handles 'Save Packing List' button.
+            final Button button_savePacking = (Button) findViewById(R.id.button_savePacking);
+            button_savePacking.setOnClickListener(new Button.OnClickListener() {
                 public void onClick(View v)
                 {
-                    Intent i = new Intent(PackingListActivity.this, MainScreen.class);
-                    startActivity(i);
+                    //TODO: Call XML Devices to Save Current Packing List
+                    Toast.makeText(getApplicationContext(), "List Has Been Saved", Toast.LENGTH_SHORT).show();
                 }
             });
 
