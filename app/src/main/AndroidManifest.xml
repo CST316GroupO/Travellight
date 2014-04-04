@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="groupo.travellight.app" >
-
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
@@ -12,10 +12,17 @@
         android:label="@string/app_name"
         android:theme="@style/Theme.AppCompat.Light">
         <uses-sdk android:minSdkVersion="19" />
+        <provider
+            android:name="FileContentProvider"
+            android:authorities="groupo.travellight.app.FileContentProvider"
+            android:exported="true"
+            android:grantUriPermissions="true">
+        </provider>
 
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+
 
         <activity
             android:name="groupo.travellight.app.LoginActivity"
@@ -72,6 +79,10 @@
         </activity>
         <activity
             android:name="groupo.travellight.app.PackingListActivity"
+            android:label="Packing List" >
+        </activity>
+        <activity
+            android:name="groupo.travellight.app.PackingListEdit"
             android:label="Packing List" >
         </activity>
 

@@ -22,15 +22,14 @@ local.properties
 # Android Studio
 .idea/
 .gradle
-gradlew
-gradlew.bat
-gradel.properties
+gradle.properties
 /*/local.properties
 /*/out
-/*/*/build
+*/build
 /*/*/production
 *.iml
 *.iws
 *.ipr
 *~
 *.swp
+proguard-project.txt

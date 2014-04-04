@@ -282,6 +282,7 @@ public class LoginActivity extends Activity {
 
                 Intent intent = new Intent (getApplicationContext(), TripActivity.class);
                 intent.putExtra("LOGIN_EMAIL", mEmail);
+
                startActivity(intent);
 
 

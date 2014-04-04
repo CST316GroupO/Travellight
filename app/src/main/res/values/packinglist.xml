@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="packingList">
+        <!-- Single Packing List Elements, Currently Reformatting Tag Structure for Parsing -->
+            <item name="Passport">
+                <status>Cool</status>
+            </item>
+            <item name="Luggage">
+                <status>Story</status>
+            </item>
+            <item name="Money">
+                <status>Bro</status>
+            </item>
+    </string-array>
+</resources>

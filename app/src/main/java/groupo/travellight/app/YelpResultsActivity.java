@@ -6,9 +6,16 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
+import android.view.View;
+import android.widget.ListView;
+import android.widget.Toast;
 
 import org.json.JSONException;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import groupo.travellight.yelp.CustomAdapter;
 import groupo.travellight.yelp.JSONResponse;
 import groupo.travellight.yelp.Yelp;
 
@@ -23,6 +30,10 @@ public class YelpResultsActivity extends ListActivity
 {
     private JSONResponse jsonResponse = new JSONResponse();
 
+    public static final String KEY_NAME = "The business name";
+    public static final String KEY_DESCRIPTION = "The business description";
+    CustomAdapter adapter;
+
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
@@ -35,10 +46,6 @@ public class YelpResultsActivity extends ListActivity
         handleIntent(intent);
     }
 
-    /*public void onListItemClick(ListView l, View v, int position, long id) {
-        // call detail activity for clicked entry
-    }*/
-
     // Callback detected from the search dialog
     // call the search logic
     private void handleIntent(Intent intent)
@@ -49,12 +56,36 @@ public class YelpResultsActivity extends ListActivity
             new SearchYelp().execute(query);
         }
     }
+
     private void postResults()
     {
+        HashMap<String, String> map = new HashMap<String, String>();
+        ArrayList<HashMap<String, String>> t1 = new ArrayList<HashMap<String, String>>();
         String[] values = jsonResponse.getBundleKeys().toArray(new String[0]);
+        for(int i = 0; i < values.length; i++)
+        {
+            System.out.println(jsonResponse.getBusinessName(i));
+            map.put(KEY_NAME, jsonResponse.getBusinessName(i));
+            t1.add(map);
+        }
+
+        adapter = new CustomAdapter(this, t1);
+        setListAdapter(adapter);
+
+        /*String[] values = jsonResponse.getBundleKeys().toArray(new String[0]);
+
+        for(int i = 0; i < values.length; i++)
+        System.out.println(jsonResponse.getBusinessName(i));
+
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, values);
-        setListAdapter(adapter);
+        setListAdapter(adapter);*/
+    }
+
+      public void onListItemClick(ListView l, View v, int position, long id) {
+        // call detail activity for clicked entry
+          Toast.makeText(getApplicationContext(), "Added to event bag",
+                  Toast.LENGTH_LONG).show();
     }
 
     /**
