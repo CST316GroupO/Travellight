@@ -81,6 +81,10 @@
             android:name="groupo.travellight.app.PackingListActivity"
             android:label="Packing List" >
         </activity>
+        <activity
+            android:name="groupo.travellight.app.PackingListEdit"
+            android:label="Packing List" >
+        </activity>
 
         <activity android:name="groupo.travellight.app.TripActivity"
             android:label="Trips"
