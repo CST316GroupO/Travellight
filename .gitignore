@@ -25,10 +25,11 @@ local.properties
 gradle.properties
 /*/local.properties
 /*/out
-/*/*/build
+*/build
 /*/*/production
 *.iml
 *.iws
 *.ipr
 *~
 *.swp
+proguard-project.txt
