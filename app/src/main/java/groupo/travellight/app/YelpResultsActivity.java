@@ -24,14 +24,13 @@ import groupo.travellight.yelp.Yelp;
  * and displays results in a listview
  * @author Brant Unger
  * @version 0.3
- *
  */
 public class YelpResultsActivity extends ListActivity
 {
     private JSONResponse jsonResponse = new JSONResponse();
 
-    public static final String KEY_NAME = "The business name";
-    public static final String KEY_DESCRIPTION = "The business description";
+    public static final String KEY_NAME = "KEY_NAME";
+    public static final String KEY_DESCRIPTION = "KEY_DESCRIPTION";
     CustomAdapter adapter;
 
     public void onCreate(Bundle savedInstanceState)
@@ -59,13 +58,13 @@ public class YelpResultsActivity extends ListActivity
 
     private void postResults()
     {
-        HashMap<String, String> map = new HashMap<String, String>();
         ArrayList<HashMap<String, String>> t1 = new ArrayList<HashMap<String, String>>();
         String[] values = jsonResponse.getBundleKeys().toArray(new String[0]);
         for(int i = 0; i < values.length; i++)
         {
-            System.out.println(jsonResponse.getBusinessName(i));
+            HashMap<String, String> map = new HashMap<String, String>();
             map.put(KEY_NAME, jsonResponse.getBusinessName(i));
+            map.put(KEY_DESCRIPTION, jsonResponse.getImageURL(i));
             t1.add(map);
         }
 

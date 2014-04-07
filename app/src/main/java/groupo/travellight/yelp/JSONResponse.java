@@ -49,7 +49,8 @@ public class JSONResponse
         for (int i = 0; i < businesses.length(); i++)
         {
             tmpString = businesses.getJSONObject(i).get("mobile_url").toString() +
-                    " ,,, " + businesses.getJSONObject(i).get("rating_img_url").toString();
+                    " ,,, " + businesses.getJSONObject(i).get("rating_img_url").toString() +
+            ",,," + businesses.getJSONObject(i).get("image_url").toString();
 
             keys.add(businesses.getJSONObject(i).get("name").toString());
             bundle.putString(keys.get(i), tmpString);
@@ -68,10 +69,23 @@ public class JSONResponse
     }
 
     /**
+     * Get the image url for the business photo
+     * @param i
+     * @return image_url
+     */
+    public String getImageURL(int i)
+    {
+        String tmp = bundle.getString(keys.get(i));
+        int x = tmp.indexOf(" ,,, ") + 10;
+        String imageURL = tmp.substring(0, x);
+        return imageURL;
+    }
+
+    /**
      * This returns the mobile URL using this class's internally stored variables at int i.
      *
      * @param i
-     * @return mobileURL
+     * @return mobile_url
      */
     public String getBusinessMobileURL(int i)
     {
@@ -84,7 +98,7 @@ public class JSONResponse
     /**
      * This will return the rating URL using this class's internal variables.
      * @param i
-     * @return ratingURL
+     * @return rating_url
      */
     public String getRatingURL (int i){
         String tmp = bundle.getString(keys.get(i));

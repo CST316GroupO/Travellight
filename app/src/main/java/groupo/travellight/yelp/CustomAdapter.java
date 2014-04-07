@@ -93,7 +93,7 @@ public class CustomAdapter extends BaseAdapter
 
         // Set all the UI details into the view
         businessName.setText(result.get(YelpResultsActivity.KEY_NAME));
-        //description.setText(result.get(YelpResultsActivity.KEY_DESCRIPTION));
+        description.setText(result.get(YelpResultsActivity.KEY_DESCRIPTION));
         //TODO: add image loader for thumbnail and rating stars
 
         return viewInflater;
