@@ -59,26 +59,16 @@ public class YelpResultsActivity extends ListActivity
     private void postResults()
     {
         ArrayList<HashMap<String, String>> t1 = new ArrayList<HashMap<String, String>>();
-        String[] values = jsonResponse.getBundleKeys().toArray(new String[0]);
-        for(int i = 0; i < values.length; i++)
+        for(int i = 0; i < t1.size(); i++)
         {
             HashMap<String, String> map = new HashMap<String, String>();
             map.put(KEY_NAME, jsonResponse.getBusinessName(i));
-            map.put(KEY_DESCRIPTION, jsonResponse.getImageURL(i));
+            map.put(KEY_DESCRIPTION, jsonResponse.getRating(i));
             t1.add(map);
         }
 
         adapter = new CustomAdapter(this, t1);
         setListAdapter(adapter);
-
-        /*String[] values = jsonResponse.getBundleKeys().toArray(new String[0]);
-
-        for(int i = 0; i < values.length; i++)
-        System.out.println(jsonResponse.getBusinessName(i));
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, values);
-        setListAdapter(adapter);*/
     }
 
       public void onListItemClick(ListView l, View v, int position, long id) {
