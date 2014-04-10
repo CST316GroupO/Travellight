@@ -16,7 +16,7 @@
    <TextView
        android:id="@+id/tripNameDisplay"
        android:layout_width="fill_parent"
-       android:textSize="45dp"
+       android:textSize="45sp"
        android:text="Trip Name"
        android:textAlignment="center"
        android:textColor="#fff"
@@ -35,5 +35,25 @@
         android:layout_below="@+id/tripNameDisplay"
         android:layout_marginTop="20dp"
         />
+    <Button
+        android:id="@+id/openFileYes"
+        android:text="Yes"
+        android:textColor="#ffe"
+
+        android:layout_alignParentBottom="true"
+        android:textSize="25dp"
+        android:layout_width="175dp"
+        android:layout_height="70dp" />
+    <Button
+        android:id="@+id/openFileNo"
+        android:text="No"
+        android:textColor="#ffe"
+        android:textSize="25dp"
+
+
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_width="175dp"
+        android:layout_height="70dp" />
 
 </RelativeLayout>

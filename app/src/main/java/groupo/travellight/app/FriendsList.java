@@ -148,12 +148,12 @@ public class FriendsList extends ListFragment implements ChooseAddMethodDialog.C
 
         String currentEmail =listOfFriends.get(position).getEmail();
         //this file is temporary, it only contains the current selected trip's name
-        shareFileName="My trip to "+ getActivity().getActionBar().getTitle().toString()+".txt";
+        shareFileName=getActivity().getActionBar().getTitle().toString()+".txt";
         File shareFile = new File(getActivity().getFilesDir(), userEmail+File.separator+shareFileName);
 
         try{
             FileOutputStream fos = new FileOutputStream (shareFile);
-            fos.write("Hello Friend, i'm going on a trip!!".getBytes());
+            fos.write((shareFileName+"$ Hello Friend, i'm going on a trip!!").getBytes());
             fos.close();
             }
         catch(FileNotFoundException e){e.printStackTrace();}
