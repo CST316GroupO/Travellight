@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -282,7 +283,10 @@ public class LoginActivity extends Activity {
 
                 Intent intent = new Intent (getApplicationContext(), TripActivity.class);
                 intent.putExtra("LOGIN_EMAIL", mEmail);
-
+                SharedPreferences preferences = getSharedPreferences("MySavedStuff", 0);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString("userEmail", mEmail);
+                editor.commit();
                startActivity(intent);
 
 

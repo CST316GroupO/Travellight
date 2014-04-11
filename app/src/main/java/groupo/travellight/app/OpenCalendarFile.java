@@ -3,6 +3,7 @@ package groupo.travellight.app;
 import android.app.ActionBar;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
@@ -28,7 +29,7 @@ import java.util.StringTokenizer;
 public class OpenCalendarFile extends ActionBarActivity {
     private Button yesButton, noButton;
     private TextView fileMessage, tripNameDisplay;
-    private String userEmail;
+    private String userEmail,tripName;
     private Intent incomingIntent;
     private Uri incomingUri;
     //private File file;
@@ -41,11 +42,13 @@ public class OpenCalendarFile extends ActionBarActivity {
         actionBar.setTitle("Travellightt");
         incomingIntent = getIntent();
         incomingUri = incomingIntent.getData();
-        //Todo: find a way to save files to the user's email folder
+        userEmail=getUserEmail();
+        //TODO make new trip folder automatically added to trip list drawer
+
        // Bundle bundle = incomingIntent.getExtras();
         //userEmail=bundle.getString("LOGIN_EMAIL");
 
-        String tripName= incomingUri.toString();//used to be .getPath();
+        //String tripName= incomingUri.toString();//used to be .getPath();
         setContentView(R.layout.activity_open_calendar_file);
 
         fileMessage= (TextView) findViewById(R.id.fileContentMessageDisplay);
@@ -57,7 +60,7 @@ public class OpenCalendarFile extends ActionBarActivity {
             ContentResolver contentResolver = getContentResolver();
             InputStream inputStream= contentResolver.openInputStream(incomingUri);
 
-            File newFile = new File(getFilesDir()+File.separator+"ReceivedFile.txt");
+            File newFile = new File(getCacheDir()+File.separator+"ReceivedFile.txt");
             FileOutputStream fileOutputStream = new FileOutputStream(newFile);
             while (inputStream.available()>0) {
                 fileOutputStream.write(inputStream.read());
@@ -68,16 +71,20 @@ public class OpenCalendarFile extends ActionBarActivity {
             FileReader fileInputStream = new FileReader(newFile);
             BufferedReader bufferedReader = new BufferedReader(fileInputStream);
             String input= bufferedReader.readLine();
+
+            //get name of the trip:
             StringTokenizer stringTokenizer =new StringTokenizer(input, "$");
             String fileTripName = stringTokenizer.nextToken().toString();
+
+            //remove file name extension)
             StringTokenizer stringTokenizer1 = new StringTokenizer(fileTripName,".");
-            String fileTripName2=stringTokenizer1.nextToken();
+            tripName=stringTokenizer1.nextToken();
             String fileContent = stringTokenizer.nextToken().toString();
 
-            tripNameDisplay.setText(fileTripName2);
+            tripNameDisplay.setText(tripName);
             fileMessage.setText(fileContent);
 
-
+            newFile.delete();//delete temporary file
 
         }catch (FileNotFoundException fe){
             fe.printStackTrace();
@@ -85,7 +92,7 @@ public class OpenCalendarFile extends ActionBarActivity {
         catch(IOException ioe){
             ioe.printStackTrace();
         }
-
+        //Buttons and their click listeners:
         yesButton = (Button) findViewById(R.id.openFileYes);
         noButton= (Button) findViewById(R.id.openFileNo);
 
@@ -93,9 +100,12 @@ public class OpenCalendarFile extends ActionBarActivity {
             @Override
             public void onClick(View view) {
                 Toast.makeText(getApplicationContext(), "Good for you.", Toast.LENGTH_SHORT).show();
-            //add the trip to the navigation drawer of the TripActivity by adding a new file to the user's directory
-//                File newTripFile= new File(getApplicationContext().getFilesDir().getPath().toString()
-//                                           + File.separator + userEmail+File.separator+)
+            //add the trip to the navigation drawer of the TripActivity by adding a new permanent file to the user's directory
+                File newTripFile= new File(getApplicationContext().getFilesDir().getPath().toString()
+                                           + File.separator + userEmail+File.separator+tripName+"3.txt");//this file will be read bythe TripActivity and added when it next restarts
+                newTripFile.mkdir();
+                //try{newTripFile.createNewFile();}catch(Exception e){};
+
             }
         });
 
@@ -127,6 +137,14 @@ public class OpenCalendarFile extends ActionBarActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public String getUserEmail(){
+        String prefFileName="MySavedStuff",emailName;
+        SharedPreferences preferences = getSharedPreferences(prefFileName, 0);
+        emailName= preferences.getString("userEmail","Not Found");
+        return emailName;
+
     }
 
 }
