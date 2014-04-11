@@ -42,11 +42,13 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_trip2">Trip2Activity</string>
     <string name="hello_world">Hello world!</string>
-    <string name = "drawer_close"> Please work</string>
-    <string name = "drawer_open"> Please work</string>
+    <string name="drawer_close"> Please work</string>
+    <string name="drawer_open"> Please work</string>
     <string name="title_activity_events_bag">EventsBag</string>
     <string name="My_Events">My Events</string>
 
     <!-- Yelp Results Strings -->
     <string name="yelp_filtersettings">Filters</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>
