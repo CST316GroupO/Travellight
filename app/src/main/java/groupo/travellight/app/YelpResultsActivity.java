@@ -59,11 +59,11 @@ public class YelpResultsActivity extends ListActivity
     private void postResults()
     {
         ArrayList<HashMap<String, String>> t1 = new ArrayList<HashMap<String, String>>();
-        for(int i = 0; i < t1.size(); i++)
+        for(int i = 0; i < jsonResponse.getBundleSize(); i++)
         {
             HashMap<String, String> map = new HashMap<String, String>();
             map.put(KEY_NAME, jsonResponse.getBusinessName(i));
-            map.put(KEY_DESCRIPTION, jsonResponse.getRating(i));
+            map.put(KEY_DESCRIPTION, jsonResponse.getSnippet(i));
             t1.add(map);
         }
 

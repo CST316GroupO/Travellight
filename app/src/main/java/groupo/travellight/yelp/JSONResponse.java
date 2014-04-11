@@ -15,13 +15,10 @@ public class JSONResponse
     private ArrayList<HashMap<String, String>> bundle = new ArrayList<HashMap<String, String>>();
 
     /**
-     * Set the raw JSON response string
-     * @param str Raw JSON String to store
+     * Returns the size of the the list of businesses
+     * @return int bundle size
      */
-    public void setResponse(String str)
-    {
-        JSONString = str;
-    }
+    public int getBundleSize() { return bundle.size(); }
 
     /**
      * Returns the raw JSON response string
@@ -52,6 +49,7 @@ public class JSONResponse
             business.put("mobile_url", JSONlist.getJSONObject(i).get("mobile_url").toString());
             business.put("rating_img_url", JSONlist.getJSONObject(i).get("rating_img_url").toString());
             business.put("rating", JSONlist.getJSONObject(i).get("rating").toString());
+            business.put("snippet_text", JSONlist.getJSONObject(i).get("snippet_text").toString());
 
             bundle.add(business); //add each business to the bundle
         }
@@ -63,10 +61,7 @@ public class JSONResponse
      * @param i The index number for the business
      * @return String Business name
      */
-    public String getBusinessName(int i)
-    {
-        return bundle.get(i).get("name");
-    }
+    public String getBusinessName(int i) { return bundle.get(i).get("name"); }
 
     /**
      * Get the image url for the business photo
@@ -76,4 +71,14 @@ public class JSONResponse
     public String getImageURL(int i) { return bundle.get(i).get("rating_img_url"); }
 
     public String getRating(int i) { return bundle.get(i).get("rating"); }
+    public String getSnippet(int i) { return bundle.get(i).get("snippet_text"); }
+
+    /**
+     * Set the raw JSON response string
+     * @param str Raw JSON String to store
+     */
+    public void setResponse(String str)
+    {
+        JSONString = str;
+    }
 }
