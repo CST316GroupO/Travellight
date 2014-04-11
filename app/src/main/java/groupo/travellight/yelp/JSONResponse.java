@@ -1,7 +1,5 @@
 package groupo.travellight.yelp;
 
-import android.os.Bundle;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -9,6 +7,12 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+
+/**
+ * This class is the interface between JSON, Android, data, and the UI
+ * @author Brant Unger
+ * @version 0.2
+ */
 public class JSONResponse
 {
     private String JSONString;
@@ -50,26 +54,18 @@ public class JSONResponse
             business.put("rating_img_url", JSONlist.getJSONObject(i).get("rating_img_url").toString());
             business.put("rating", JSONlist.getJSONObject(i).get("rating").toString());
             business.put("snippet_text", JSONlist.getJSONObject(i).get("snippet_text").toString());
-
+            business.put("image_url", JSONlist.getJSONObject(i).get("image_url").toString());
             bundle.add(business); //add each business to the bundle
         }
     }
 
     /**
-     * This gets the business's name, which is stored in the ArrayList bundle, using
-     * this class's stored results.
-     * @param i The index number for the business
-     * @return String Business name
+     * All of the functions below get data from a hashmap of yelp details.
+     * Each hashmap is contained at position 'i' of the list.
      */
     public String getBusinessName(int i) { return bundle.get(i).get("name"); }
-
-    /**
-     * Get the image url for the business photo
-     * @param i
-     * @return image_url
-     */
-    public String getImageURL(int i) { return bundle.get(i).get("rating_img_url"); }
-
+    public String getRatingURL(int i) { return bundle.get(i).get("rating_img_url"); }
+    public String getThumbURL(int i) { return bundle.get(i).get("image_url"); }
     public String getRating(int i) { return bundle.get(i).get("rating"); }
     public String getSnippet(int i) { return bundle.get(i).get("snippet_text"); }
 
