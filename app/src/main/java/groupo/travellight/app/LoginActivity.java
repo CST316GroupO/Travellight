@@ -64,6 +64,7 @@ public class LoginActivity extends Activity {
 
         setContentView(R.layout.activity_login);
         try {
+
             String destPath = "/data/data/" + getPackageName() + "/databases/TravelLight";
             File f = new File(destPath);
             if (!f.exists()) {
