@@ -1,9 +1,13 @@
 package groupo.travellight.test;
 
+import android.app.Instrumentation;
+import android.app.KeyguardManager;
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.TouchUtils;
 import android.test.ViewAsserts;
 import android.test.suitebuilder.annotation.SmallTest;
+import android.view.KeyEvent;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.EditText;
 
@@ -17,9 +21,10 @@ import groupo.travellight.app.R;
 public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginActivity> {
     LoginActivity activity;
     EditText editLogin, editPassword;
-
+    Instrumentation mInstrumentation;
     public LoginActivityTest(){
         super(LoginActivity.class);
+
 
     }
 
@@ -27,6 +32,8 @@ public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginAct
     protected void setUp() throws Exception{
         super.setUp();
         activity = getActivity();
+
+        mInstrumentation = getInstrumentation();
 
         editLogin = (EditText)activity.findViewById(groupo.travellight.app.R.id.email);
         editPassword = (EditText)activity.findViewById(groupo.travellight.app.R.id.password);
@@ -47,22 +54,32 @@ public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginAct
 
     }
 
-    public void testInputRequirements(){
-        editLogin.clearComposingText();
-        editPassword.clearComposingText();
-        //TEST LOGIN
-        TouchUtils.tapView(this, editLogin);
-        //no input
-        sendKeys("");
-        TouchUtils.clickView(this, activity.findViewById(R.id.sign_in_button));
+    public void testLoginRequirements(){
 
-        assertEquals("This field is required", editLogin.getError());
-        editLogin.clearComposingText();
+
+
+        //no @ symbol
         TouchUtils.tapView(this, editLogin);
+        getInstrumentation().sendStringSync("123");
+
+        TouchUtils.clickView(this, activity.findViewById(R.id.sign_in_button));
+        assertEquals("This email address is invalid", editLogin.getError());
+
+
+        //no input
+        TouchUtils.tapView(this, editLogin);
+        for (int i = 0; i <3; i++){
+            getInstrumentation().sendCharacterSync(KeyEvent.KEYCODE_DPAD_LEFT);
+            getInstrumentation().sendCharacterSync(KeyEvent.KEYCODE_FORWARD_DEL);
+        }
+         TouchUtils.clickView(this, activity.findViewById(R.id.sign_in_button));
+        assertEquals("This field is required", editLogin.getError());
+
+        /*TouchUtils.tapView(this, editLogin);
         //no @ symbol
         sendKeys("brant.unger");
         TouchUtils.clickView(this, activity.findViewById(R.id.sign_in_button));
-        assertEquals("This email address is invalid", editLogin.getError());
+
         editLogin.clearComposingText();
         //TEST PASSWORD
         TouchUtils.tapView(this, editPassword);
@@ -77,6 +94,6 @@ public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginAct
         sendKeys("123");
         TouchUtils.clickView(this, activity.findViewById(R.id.sign_in_button));
         assertEquals("This password is too short", editPassword.getError());
-        editPassword.clearComposingText();
+        editPassword.clearComposingText();*/
     }
 }
