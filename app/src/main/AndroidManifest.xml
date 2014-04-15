@@ -104,6 +104,10 @@
                 <data android:host="*" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="groupo.travellight.app.ActivityToTestFriends"
+            android:label="ToTestFriendsList">
+        </activity>
     </application>
 
 </manifest>
