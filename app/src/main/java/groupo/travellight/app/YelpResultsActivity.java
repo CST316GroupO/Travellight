@@ -1,10 +1,13 @@
 package groupo.travellight.app;
 
+import android.app.Activity;
 import android.app.ListActivity;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -24,7 +27,8 @@ import groupo.travellight.yelp.Yelp;
  * @author Brant Unger
  * @version 0.3
  */
-public class YelpResultsActivity extends ListActivity {
+public class YelpResultsActivity extends ListActivity
+{
     private JSONResponse jsonResponse = new JSONResponse();
 
     //  Constants for custom data adapter keys
@@ -36,10 +40,20 @@ public class YelpResultsActivity extends ListActivity {
 
     CustomAdapter adapter;
 
+    // Callback when options menu needs to be created
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.yelp_results, menu);
+        return true;
+    }
+
     // Callback on creation of results activity
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        setTitle("Results"); //set the actionbar title
         handleIntent(getIntent());
     }
 
