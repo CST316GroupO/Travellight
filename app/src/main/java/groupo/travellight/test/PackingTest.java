@@ -11,6 +11,10 @@ import android.widget.TextView;
 import groupo.travellight.app.PackingListActivity;
 import groupo.travellight.app.R;
 
+/**
+ * Packing Test
+ * A test for the PackingListActivity 
+ */
 public class PackingTest extends ActivityInstrumentationTestCase2<PackingListActivity> {
 
     PackingListActivity activity;
