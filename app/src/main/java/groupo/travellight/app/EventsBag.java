@@ -14,8 +14,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /*
@@ -33,12 +31,6 @@ public class EventsBag extends ActionBarActivity {
 
         //create a test events list
         populateEventsList();
-
-        //sort the events list
-        Collections.sort(myEvents, new EventRatingComparator());
-
-        //change the sort to be in descending order
-        Collections.reverse(myEvents);
 
         //populate the list
         populateListView();
@@ -73,11 +65,11 @@ public class EventsBag extends ActionBarActivity {
      */
     private void populateEventsList()
     {
-        myEvents.add((new Events("Bungee Jump", 3)));
-        myEvents.add((new Events("Skiing", 4)));
-        myEvents.add((new Events("Biking", 5)));
-        myEvents.add((new Events("Eating", 5)));
-        myEvents.add((new Events("Adventuring", 1)));
+        myEvents.add((new Events("Bungee Jump")));
+        myEvents.add((new Events("Skiing")));
+        myEvents.add((new Events("Biking")));
+        myEvents.add((new Events("Eating")));
+        myEvents.add((new Events("Adventuring")));
     }
 
     /*
@@ -166,27 +158,7 @@ public class EventsBag extends ActionBarActivity {
             TextView eventNameText = (TextView) itemView.findViewById(R.id.event_Name);
             eventNameText.setText(currentEvent.getName());
 
-            //Rating:
-            TextView eventRatingText = (TextView) itemView.findViewById(R.id.event_Rating);
-            eventRatingText.setText("" + currentEvent.getRating());
-
             return itemView;
-        }
-    }
-
-    /*
-        comparator class to sort events based on rating
-     */
-    private class EventRatingComparator implements Comparator<Events>
-    {
-        /*
-            the compare method for the events array list
-         */
-        @Override
-        public int compare(Events event1, Events event2)
-        {
-            int result = Float.compare(event1.getRating(), event2.getRating());
-            return result;
         }
     }
 
