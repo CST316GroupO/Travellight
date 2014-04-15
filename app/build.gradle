@@ -9,7 +9,7 @@ android {
         targetSdkVersion 19
         versionCode 1
         versionName "1.0"
-        testPackageName "groupo.travellight.tests"
+        testPackageName "groupo.travellight.test"
     }
 
     compileOptions {
