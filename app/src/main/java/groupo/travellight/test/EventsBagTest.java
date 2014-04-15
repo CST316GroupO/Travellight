@@ -3,6 +3,9 @@ package groupo.travellight.test;
 import android.app.Instrumentation;
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.TouchUtils;
+import android.widget.ListView;
+
+import java.util.List;
 
 import groupo.travellight.app.EventsBag;
 import groupo.travellight.app.Events;
@@ -13,8 +16,10 @@ import groupo.travellight.app.Events;
  */
 public class EventsBagTest extends ActivityInstrumentationTestCase2<EventsBag>
 {
-    private EventsBag eventsBag;
-    private Instrumentation mInstrumentation;
+    EventsBag eventsBag;
+    ListView listView;
+    View view;
+    Instrumentation mInstrumentation;
 
     public EventsBagTest()
     {
@@ -27,6 +32,9 @@ public class EventsBagTest extends ActivityInstrumentationTestCase2<EventsBag>
         eventsBag = getActivity();
 
         mInstrumentation = getInstrumentation();
+
+        listView = (ListView) eventsBag.findViewById(R.id.eventsListView);
+        view = listView.getChildAt(2); //get view at position : will be used for testEventsBagRemove
     }
 
     /*
@@ -34,14 +42,16 @@ public class EventsBagTest extends ActivityInstrumentationTestCase2<EventsBag>
      */
     public void testEventsBagView()
     {
-        
+        assertNotNull(listView);
     }
 
     /*
         Test if the remove is working
+             may need to break up method to separate AlertDialog test from this
      */
     public void testEventsBagRemove()
     {
+        TouchUtils.longClickView(this, view);
 
     }
 }
