@@ -64,6 +64,9 @@ public class PackingListActivity extends ActionBarActivity {
         addPackingItem("Clothes", "Unpacked");
         populateList();
 
+        //Set up the removal methods
+        callRemove();
+
         final Button btnAdd = (Button) findViewById(R.id.btnAdd);
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,8 +95,43 @@ public class PackingListActivity extends ActionBarActivity {
         });
     }
 
-    //The Remove Call Apparently did not work in test enviroment
-    //private void callRemove() {
+    //Remove Item Derived From Tommy's checkForRemove Method
+    //BUG: Activity Crashes When You Remove An Item Added In The Wizard
+    private void callRemove(){
+        ListView list = (ListView) findViewById(R.id.packingListView);
+        final PackingListAdapter adapter = new PackingListAdapter();
+        list.setAdapter(adapter);
+        list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener()
+        {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, final int position, long l)
+            {
+                AlertDialog.Builder adb = new AlertDialog.Builder(PackingListActivity.this);
+                adb.setTitle("Are you sure you want to delete this item?");
+                adb.setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+                        PackingItems.remove(position);
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+
+                adb.setNegativeButton("No", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+                        dialogInterface.dismiss();
+                    }
+                });
+
+                adb.show();
+                return false;
+            }
+        });
+    }
 
     //Called to add new packing list item to the list
     //See: PackingListAdapter
