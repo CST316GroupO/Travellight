@@ -105,7 +105,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="groupo.travellight.app.ActivityToTestFriends"
+            android:name=".ActivitiesToTestFriends.ActivityToTestFriends"
             android:label="ToTestFriendsList">
         </activity>
     </application>

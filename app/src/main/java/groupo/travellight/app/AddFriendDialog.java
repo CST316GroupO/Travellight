@@ -110,7 +110,7 @@ public class AddFriendDialog extends DialogFragment{
     @Override
     public void onDismiss(DialogInterface dialog){
         super.onDismiss(dialog);
-        InputMethodManager imm =(InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm =(InputMethodManager) getActivity().getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(et.getWindowToken(),0);
     }
 

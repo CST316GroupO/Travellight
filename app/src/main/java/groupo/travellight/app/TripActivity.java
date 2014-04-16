@@ -30,7 +30,7 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
     private ActionBarDrawerToggle mDrawerToggle;
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
-    private ArrayAdapter mDrawerAdapter;
+    //private ArrayAdapter mDrawerAdapter;//added by Brandon
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,10 +54,10 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
-        mDrawerAdapter = new ArrayAdapter<String>(this,R.layout.popup_layout,trips);//this line was blank
+        //mDrawerAdapter = new ArrayAdapter<String>(this,R.layout.popup_layout,trips);//this line was blank
         // Set the adapter for the list view
-        //mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.popup_layout, trips));
-        mDrawerList.setAdapter(mDrawerAdapter);//this line didn't exist
+        mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.popup_layout, trips));
+       // mDrawerList.setAdapter(mDrawerAdapter);//this line didn't exist
         // Set the list's click listener
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
@@ -87,7 +87,6 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
         // Set the drawer toggle as the DrawerListener
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         getActionBar().setDisplayHomeAsUpEnabled(true);
-
 
 
 
@@ -195,7 +194,7 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
 }
     private void showRemove() {
         AlertDialog.Builder helpBuilder = new AlertDialog.Builder(this);
-        helpBuilder.setTitle("Remove trip " + getActionBar().getTitle()+ "?");
+        helpBuilder.setTitle("Remove trip " + getActionBar().getTitle() + "?");
 
 
         //Save button
@@ -277,12 +276,15 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
 
             if (listOfFiles[i].isDirectory())
             {
-                trips.add(listOfFiles[i].getName());
+                if (!trips.contains(listOfFiles[i].getName())) {
+                    trips.add(listOfFiles[i].getName());
+                }
 
             }
         }
 
-        mDrawerAdapter.notifyDataSetChanged();
+        ArrayAdapter adapter =(ArrayAdapter) mDrawerList.getAdapter();//mDrawerAdapter.notifyDataSetChanged();
+        adapter.notifyDataSetChanged();
     }
     /**
      * A placeholder fragment containing a simple view.

@@ -50,6 +50,7 @@ public class FriendsList extends ListFragment implements ChooseAddMethodDialog.C
         Intent in = getActivity().getIntent();
         Bundle b = in.getExtras();
         userEmail = b.getString("LOGIN_EMAIL");
+        //userEmail="TestingEmail@email";
         setHasOptionsMenu(true);
     }
 
@@ -140,10 +141,20 @@ public class FriendsList extends ListFragment implements ChooseAddMethodDialog.C
         adapter.notifyDataSetChanged();
     }
     public void getFriendInfo(int position){
-        String currentEmail =listOfFriends.get(position).getEmail();
-        String currentName = listOfFriends.get(position).getName();
+        Friend currentFriend=listOfFriends.get(position);
+        String currentEmail =currentFriend.getEmail();
+        String currentName = currentFriend.getName();
         popupEditDialog(currentName, currentEmail,position);
     }
+
+    public Friend getFriend(int position){
+        return listOfFriends.get(position);
+    }
+
+    public ArrayList<Friend> getListOfFriends(){
+        return listOfFriends;
+    }
+
     public void sendFriendEmail(int position){
 
         String currentEmail =listOfFriends.get(position).getEmail();

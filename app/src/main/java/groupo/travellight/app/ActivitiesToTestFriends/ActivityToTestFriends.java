@@ -1,8 +1,11 @@
-package groupo.travellight.app;
+package groupo.travellight.app.ActivitiesToTestFriends;
 
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+
+import groupo.travellight.app.FriendsList;
+import groupo.travellight.app.R;
 
 /**
  * Created by Brandon on 4/14/14. This activity starts with the FriendsList Fragment, so that I can
