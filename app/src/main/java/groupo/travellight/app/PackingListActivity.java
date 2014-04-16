@@ -24,8 +24,11 @@ import java.util.List;
 
 /**
  * Created by Joseph Bandola on 2/25/14.
- * This Activity handles the Basic Packing List Screen, showing the viewer their list
- * TODO: Remove, Save List
+ * Packing List Activity
+ * This Activity handles the Packing List Screen, including
+ * viewing the list as well as modifying the elements
+ * contained in the list.
+ * TODO: Save List, Add A Picture To Item
  *          -Currently Working on This on a Seprate Project
  */
 public class PackingListActivity extends ActionBarActivity {
@@ -46,14 +49,13 @@ public class PackingListActivity extends ActionBarActivity {
 
         TabHost tabHost = (TabHost) findViewById(R.id.tabHost);
 
+        //Set up the Add Item and Packing List Tabs Respectively
         tabHost.setup();
-        //Set up Add Item Tab
         TabHost.TabSpec tabSpec = tabHost.newTabSpec("Add Item");
         tabSpec.setContent(R.id.tabAdd);
         tabSpec.setIndicator("Add Item");
         tabHost.addTab(tabSpec);
 
-        //Set Up Pack List Tab
         tabSpec = tabHost.newTabSpec("packList");
         tabSpec.setContent(R.id.tabPackList);
         tabSpec.setIndicator("Packing List");
@@ -64,7 +66,7 @@ public class PackingListActivity extends ActionBarActivity {
         addPackingItem("Clothes", "Unpacked");
         populateList();
 
-        //Set up the removal methods
+        //Prep up the removal methods
         callRemove();
 
         final Button btnAdd = (Button) findViewById(R.id.btnAdd);
@@ -96,7 +98,6 @@ public class PackingListActivity extends ActionBarActivity {
     }
 
     //Remove Item Derived From Tommy's checkForRemove Method
-    //BUG: Activity Crashes When You Remove An Item Added In The Wizard
     private void callRemove(){
         ListView list = (ListView) findViewById(R.id.packingListView);
         final PackingListAdapter adapter = new PackingListAdapter();
@@ -107,7 +108,7 @@ public class PackingListActivity extends ActionBarActivity {
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, final int position, long l)
             {
                 AlertDialog.Builder adb = new AlertDialog.Builder(PackingListActivity.this);
-                adb.setTitle("Are you sure you want to delete this item?");
+                adb.setTitle("Are you sure you want to delete the item: " + PackingItems.get(position).getName() + "?");
 
                 adb.setNegativeButton("No", new DialogInterface.OnClickListener()
                 {
@@ -147,7 +148,10 @@ public class PackingListActivity extends ActionBarActivity {
     }
 
 
-
+    /**
+     * PackingListAdapter
+     * Custom Adapter That Implements the Unique List View Element for the Packing List
+     */
     private class PackingListAdapter extends ArrayAdapter<PackingItem> {
 
         public PackingListAdapter() {
