@@ -108,15 +108,6 @@ public class PackingListActivity extends ActionBarActivity {
             {
                 AlertDialog.Builder adb = new AlertDialog.Builder(PackingListActivity.this);
                 adb.setTitle("Are you sure you want to delete this item?");
-                adb.setPositiveButton("Yes", new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i)
-                    {
-                        PackingItems.remove(position);
-                        adapter.notifyDataSetChanged();
-                    }
-                });
 
                 adb.setNegativeButton("No", new DialogInterface.OnClickListener()
                 {
@@ -124,6 +115,16 @@ public class PackingListActivity extends ActionBarActivity {
                     public void onClick(DialogInterface dialogInterface, int i)
                     {
                         dialogInterface.dismiss();
+                    }
+                });
+
+                adb.setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+                        PackingItems.remove(position);
+                        populateList();
                     }
                 });
 
