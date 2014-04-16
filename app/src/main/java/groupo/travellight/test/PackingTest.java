@@ -13,7 +13,7 @@ import groupo.travellight.app.R;
 
 /**
  * Packing Test
- * A test for the PackingListActivity 
+ * A test for the PackingListActivity
  */
 public class PackingTest extends ActivityInstrumentationTestCase2<PackingListActivity> {
 
@@ -33,8 +33,6 @@ public class PackingTest extends ActivityInstrumentationTestCase2<PackingListAct
 
         mInstrumentation = getInstrumentation();
 
-        buttonAdd = (Button)activity.findViewById(R.id.button_addPacking);
-        buttonSave = (Button)activity.findViewById(R.id.button_savePacking);
     }
 
     //Test if view is availible(?)
