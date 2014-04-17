@@ -158,11 +158,12 @@ public class FriendsList extends ListFragment implements ChooseAddMethodDialog.C
     public void sendFriendEmail(int position){
 
         String currentEmail =listOfFriends.get(position).getEmail();
+
         //this file is temporary, it only contains the current selected trip's name
         shareFileName=getActivity().getActionBar().getTitle().toString()+".txt";
         File shareFile = new File(getActivity().getFilesDir(), userEmail+File.separator+shareFileName);
 
-        try{
+        try{  //TODO: make file contain actual calendar info
             FileOutputStream fos = new FileOutputStream (shareFile);
             fos.write((shareFileName+"$ Hello Friend, i'm going on a trip!!").getBytes());
             fos.close();
@@ -174,8 +175,8 @@ public class FriendsList extends ListFragment implements ChooseAddMethodDialog.C
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("message/rfc822");
         intent.putExtra(Intent.EXTRA_EMAIL,new String[]{currentEmail});
-        intent.putExtra(Intent.EXTRA_SUBJECT,"TRAVELLIGHT -Sharing a Trip");
-        intent.putExtra(Intent.EXTRA_TEXT, "File is attached");
+        intent.putExtra(Intent.EXTRA_SUBJECT,"TRAVELLIGHT - A Trip has been shared with you");
+        intent.putExtra(Intent.EXTRA_TEXT, "You must have Travellight installed to open the attached file.");
         intent.putExtra(Intent.EXTRA_STREAM,Uri.parse("content://groupo.travellight.app.FileContentProvider"+File.separator+userEmail+File.separator+shareFileName));
 
         try {

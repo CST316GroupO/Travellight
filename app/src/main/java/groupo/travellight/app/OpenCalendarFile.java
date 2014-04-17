@@ -32,7 +32,6 @@ public class OpenCalendarFile extends ActionBarActivity {
     private String userEmail,tripName;
     private Intent incomingIntent;
     private Uri incomingUri;
-    //private File file;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,20 +42,14 @@ public class OpenCalendarFile extends ActionBarActivity {
         incomingIntent = getIntent();
         incomingUri = incomingIntent.getData();
         userEmail=getUserEmail();
-        //TODO make new trip folder automatically added to trip list drawer
 
-       // Bundle bundle = incomingIntent.getExtras();
-        //userEmail=bundle.getString("LOGIN_EMAIL");
-
-        //String tripName= incomingUri.toString();//used to be .getPath();
         setContentView(R.layout.activity_open_calendar_file);
 
-        fileMessage= (TextView) findViewById(R.id.fileContentMessageDisplay);
+        //fileMessage= (TextView) findViewById(R.id.fileContentMessageDisplay);
         tripNameDisplay= (TextView) findViewById(R.id.tripNameDisplay);
 
         try {
-
-            //using contentResolver to get file contents and making a local file out of it
+            //using contentResolver to get file contents and making a local cache file out of it
             ContentResolver contentResolver = getContentResolver();
             InputStream inputStream= contentResolver.openInputStream(incomingUri);
 
@@ -66,7 +59,7 @@ public class OpenCalendarFile extends ActionBarActivity {
                 fileOutputStream.write(inputStream.read());
             }
             fileOutputStream.close();
-
+            //TODO: Change how this file reading is done when calendar info is actually written into attachment file
             //for displaying file contents, this is TEMPORARY: contents will actually be Calendar information
             FileReader fileInputStream = new FileReader(newFile);
             BufferedReader bufferedReader = new BufferedReader(fileInputStream);
@@ -82,7 +75,7 @@ public class OpenCalendarFile extends ActionBarActivity {
             String fileContent = stringTokenizer.nextToken().toString();
 
             tripNameDisplay.setText(tripName);
-            fileMessage.setText(fileContent);
+            //fileMessage.setText(fileContent);
 
             newFile.delete();//delete temporary file
 
@@ -99,12 +92,19 @@ public class OpenCalendarFile extends ActionBarActivity {
         yesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "Good for you.", Toast.LENGTH_SHORT).show();
+
             //add the trip to the navigation drawer of the TripActivity by adding a new permanent file to the user's directory
+            //also TEMPORARY, this will actually copy the contents of the attached file into this local permanent folder
                 File newTripFile= new File(getApplicationContext().getFilesDir().getPath().toString()
-                                           + File.separator + userEmail+File.separator+tripName+"3.txt");//this file will be read bythe TripActivity and added when it next restarts
+                                           + File.separator + userEmail+File.separator+tripName+"_!Test!.txt");//this file will be read bythe TripActivity and added when it next restarts
                 newTripFile.mkdir();
-                //try{newTripFile.createNewFile();}catch(Exception e){};
+                Toast.makeText(getApplicationContext(), "Trip has been added", Toast.LENGTH_SHORT).show();
+                //finishAffinity();
+                Intent intent = new Intent(getApplicationContext(), TripActivity.class);
+                intent.putExtra("LOGIN_EMAIL", userEmail);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
 
             }
         });
@@ -112,26 +112,23 @@ public class OpenCalendarFile extends ActionBarActivity {
         noButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "whatever you say", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Trip not added.", Toast.LENGTH_LONG).show();
+                finish();
             }
         });
-
-
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.open_calendar_file, menu);
+        //getMenuInflater().inflate(R.menu.open_calendar_file, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             return true;

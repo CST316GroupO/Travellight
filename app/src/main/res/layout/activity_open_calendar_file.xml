@@ -24,36 +24,36 @@
        android:layout_height="wrap_content"
        android:layout_marginTop="20dp"
        android:layout_below="@+id/openFileTitle"/>
-    <TextView
-        android:id="@+id/fileContentMessageDisplay"
-        android:textSize="20dp"
-        android:text="Description"
-        android:textColor="#fff"
-        android:background="#ff8eabc6"
-        android:layout_width="fill_parent"
-        android:layout_height="30dp"
-        android:layout_below="@+id/tripNameDisplay"
-        android:layout_marginTop="20dp"
-        />
+
     <Button
         android:id="@+id/openFileYes"
         android:text="Yes"
-        android:textColor="#ffe"
-
-        android:layout_alignParentBottom="true"
         android:textSize="25dp"
         android:layout_width="175dp"
-        android:layout_height="70dp" />
+        android:layout_height="70dp"
+        android:layout_alignTop="@+id/openFileNo"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
     <Button
         android:id="@+id/openFileNo"
         android:text="No"
-        android:textColor="#ffe"
         android:textSize="25dp"
-
-
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
         android:layout_width="175dp"
-        android:layout_height="70dp" />
+        android:layout_height="70dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <!--<TextView-->
+        <!--android:id="@+id/fileContentMessageDisplay"-->
+        <!--android:textSize="20dp"-->
+        <!--android:text="Description"-->
+        <!--android:textColor="#fff"-->
+        <!--android:background="#ff8eabc6"-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="30dp"-->
+        <!--android:layout_below="@+id/tripNameDisplay"-->
+        <!--android:layout_marginTop="20dp"-->
+        <!--/>-->
 
 </RelativeLayout>
