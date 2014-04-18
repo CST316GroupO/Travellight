@@ -28,27 +28,6 @@
                 android:layout_height="fill_parent">
 
                 <LinearLayout
-                    android:id="@+id/tabPackList"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:text="Packing List"
-                        android:id="@+id/textView2"
-                        android:layout_gravity="center_horizontal" />
-
-                    <ListView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/packingListView"
-                        android:layout_gravity="center_horizontal" />
-                </LinearLayout>
-
-                <LinearLayout
                     android:id="@+id/tabAdd"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
@@ -63,6 +42,14 @@
                         android:layout_alignParentTop="true"
                         android:layout_centerHorizontal="true"
                         android:layout_gravity="center_horizontal" />
+
+                    <ImageView
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:id="@+id/imgViewPackingImage"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="10dp"
+                        android:src="@drawable/img_packing_def" />
 
                     <EditText
                         android:layout_width="364dp"
@@ -86,6 +73,27 @@
                         android:layout_centerHorizontal="true"
                         android:layout_marginTop="56dp"
                         android:enabled="true"
+                        android:layout_gravity="center_horizontal" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/tabPackList"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:text="Packing List"
+                        android:id="@+id/textView2"
+                        android:layout_gravity="center_horizontal" />
+
+                    <ListView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/packingListView"
                         android:layout_gravity="center_horizontal" />
                 </LinearLayout>
 

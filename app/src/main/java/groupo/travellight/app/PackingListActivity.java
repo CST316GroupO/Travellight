@@ -14,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TextView;
@@ -34,6 +35,7 @@ import java.util.List;
 public class PackingListActivity extends ActionBarActivity {
 
     EditText itemText;
+    ImageView imgViewPackingImage;
     String statusText;
     List<PackingItem> PackingItems = new ArrayList<PackingItem>();
     ListView packingListView;
@@ -44,6 +46,7 @@ public class PackingListActivity extends ActionBarActivity {
         setContentView(R.layout.activity_packing_list);
 
         itemText = (EditText) findViewById(R.id.itemText);
+        imgViewPackingImage = (ImageView) findViewById(R.id.imgViewPackingImage);
         statusText = "Unpacked";
         packingListView = (ListView) findViewById(R.id.packingListView);
 
@@ -78,6 +81,18 @@ public class PackingListActivity extends ActionBarActivity {
                 Toast.makeText(getApplicationContext(), "Your Item: " + itemText.getText().toString() + " Has Been Added!", Toast.LENGTH_SHORT).show();
             }
         });
+
+        //'Change Image' interface.
+        imgViewPackingImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent, "Select Item Image"), 1);
+            }
+        });
+
 
         itemText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -145,6 +160,14 @@ public class PackingListActivity extends ActionBarActivity {
     //Constructs a new Packing List Item Object When Called
     private void addPackingItem(String name, String status) {
         PackingItems.add(new PackingItem(name, status));
+    }
+
+    //Method that handles fetching a new image from phone storage.
+    public void onActivityResult(int reqCode, int resCode, Intent data) {
+        if (resCode == RESULT_OK){
+            if (resCode == 1)
+            { imgViewPackingImage.setImageURI(data.getData()); }
+        }
     }
 
 
