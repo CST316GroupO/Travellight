@@ -19,6 +19,33 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.GregorianCalendar;
+import java.util.Locale;
+
+import android.app.Activity;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.GridView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import java.io.File;
 import java.util.ArrayList;
 
@@ -30,12 +57,123 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
     private ActionBarDrawerToggle mDrawerToggle;
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
+    private BufferedReader bRead;
+    private File folder;
 
+    private File[] listOfFiles;
+    //Calendar
+    public GregorianCalendar month, itemmonth;// calendar instances.
+
+    public CalendarAdapter adapter;// adapter instance
+    public Handler handler;// for grabbing some event values for showing the dot
+    // marker.
+    public ArrayList<String> items; // container to store calendar items which
+    // needs showing the event marker
+    ArrayList<String> event;
+    LinearLayout rLayout;
+    ArrayList<String> date;
+    ArrayList<String> desc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Calendar
         setContentView(R.layout.activity_trip);
+        //setContentView(R.layout.activity_trip);
+        Locale.setDefault(Locale.US);
+
+        rLayout = (LinearLayout) findViewById(R.id.text);
+        month = (GregorianCalendar) GregorianCalendar.getInstance();
+        itemmonth = (GregorianCalendar) month.clone();
+
+        items = new ArrayList<String>();
+
+        adapter = new CalendarAdapter(this, month);
+
+        GridView gridview = (GridView) findViewById(R.id.gridview);
+        gridview.setAdapter(adapter);
+
+        handler = new Handler();
+        handler.post(calendarUpdater);
+
+        TextView title = (TextView) findViewById(R.id.title);
+        title.setText(android.text.format.DateFormat.format("MMMM yyyy", month));
+
+        RelativeLayout previous = (RelativeLayout) findViewById(R.id.previous);
+
+        previous.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                setPreviousMonth();
+                refreshCalendar();
+            }
+        });
+
+        RelativeLayout next = (RelativeLayout) findViewById(R.id.next);
+        next.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                setNextMonth();
+                refreshCalendar();
+
+            }
+        });
+
+        gridview.setOnItemClickListener(new OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View v,
+                                    int position, long id) {
+                // removing the previous view if added
+                if (((LinearLayout) rLayout).getChildCount() > 0) {
+                    ((LinearLayout) rLayout).removeAllViews();
+                }
+                desc = new ArrayList<String>();
+                date = new ArrayList<String>();
+                ((CalendarAdapter) parent.getAdapter()).setSelected(v);
+                String selectedGridDate = CalendarAdapter.dayString
+                        .get(position);
+                String[] separatedTime = selectedGridDate.split("-");
+                String gridvalueString = separatedTime[2].replaceFirst("^0*",
+                        "");// taking last part of date. ie; 2 from 2012-12-02.
+                int gridvalue = Integer.parseInt(gridvalueString);
+                // navigate to next or previous month on clicking offdays.
+                if ((gridvalue > 10) && (position < 8)) {
+                    setPreviousMonth();
+                    refreshCalendar();
+                } else if ((gridvalue < 7) && (position > 28)) {
+                    setNextMonth();
+                    refreshCalendar();
+                }
+                ((CalendarAdapter) parent.getAdapter()).setSelected(v);
+
+                for (int i = 0; i < Utility.startDates.size(); i++) {
+                    if (Utility.startDates.get(i).equals(selectedGridDate)) {
+                        desc.add(Utility.nameOfEvent.get(i));
+                    }
+                }
+
+                if (desc.size() > 0) {
+                    for (int i = 0; i < desc.size(); i++) {
+                        TextView rowTextView = new TextView(TripActivity.this);
+
+                        // set some properties of rowTextView or something
+                        rowTextView.setText(desc.get(i));
+                        rowTextView.setTextColor(Color.BLACK);
+
+                        // add the textview to the linearlayout
+                        rLayout.addView(rowTextView);
+
+                    }
+
+                }
+
+                desc = null;
+
+            }
+
+        });
+
         Intent in = getIntent();
         Bundle b = in.getExtras();
         String email = "";
@@ -46,10 +184,10 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
             email = b.getString("LOGIN_EMAIL");
         }
         mEmail = email;
-        Log.d("before", "1");
-        File folder = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + email);
-        Log.d("after", folder.toString());
-        File[] listOfFiles = folder.listFiles();
+
+        folder = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + email);
+
+        listOfFiles = folder.listFiles();
         if (listOfFiles != null){
             for (int i = 0; i < listOfFiles.length; i++)
             {
@@ -79,9 +217,7 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
                 getActionBar().setTitle(mTitle);
-                if (mTitle.equals("Trips")){
-                    Toast.makeText(getApplicationContext(), "Select or create a trip.", Toast.LENGTH_LONG).show();
-                }
+
                 //invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
@@ -90,14 +226,40 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
                 super.onDrawerOpened(drawerView);
                 getActionBar().setTitle(mDrawerTitle);
                 //invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+                Toast.makeText(getApplicationContext(), "Select or create a trip.", Toast.LENGTH_LONG).show();
             }
         };
 
         // Set the drawer toggle as the DrawerListener
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         getActionBar().setDisplayHomeAsUpEnabled(true);
+        if (listOfFiles.length <= 1){
+            mDrawerLayout.openDrawer(mDrawerList);
+            showPopUp();
+            Toast.makeText(getApplicationContext(), "Create a new trip.", Toast.LENGTH_LONG).show();
+        }
+        String t = "";
+        File f = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + "recent.txt");
+        if (f.exists()){
+            try {
+                bRead = new BufferedReader(new FileReader(f));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            try {
+                t = bRead.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (!t.equals("Trips")){
+                try {
+                    selectItem(trips.indexOf(t));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
 
-
+        }
 
 
     }
@@ -124,18 +286,48 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView parent, View view, int position, long id) {
-            selectItem(position);
+
+            try {
+                selectItem(position);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         }
     }
 
     /** Swaps fragments in the main content view */
-    private void selectItem(int position) {
+    private void selectItem(int position) throws IOException {
 
 
         // Highlight the selected item, update the title, and close the drawer
         mDrawerList.setItemChecked(position, true);
         setTitle(trips.get(position));
         mDrawerLayout.closeDrawer(mDrawerList);
+        PrintWriter writer = null;
+
+        writer = new PrintWriter(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + "recent.txt", "UTF-8");
+
+        writer.println(trips.get(position).toString());
+        writer.close();
+        Utility.nameOfEvent.clear();
+        Utility.startDates.clear();
+        File f = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + trips.get(position).toString() + "/" + "events.txt");
+        if (f.exists()){
+        BufferedReader in = new BufferedReader(new FileReader(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + trips.get(position).toString() + "/" + "events.txt"));
+
+        Utility.nameOfEvent.add(in.readLine());
+        Utility.startDates.add(Utility.getDate(Long.parseLong(in.readLine())));
+
+        }
+        else{
+            writer = new PrintWriter(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + trips.get(position).toString() + "/" + "events.txt", "UTF-8");
+            writer.println("Biking");
+            writer.println("1398051792000");
+            writer.close();
+        }
+        refreshCalendar();
+
     }
 
     @Override
@@ -181,6 +373,12 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
             f.mkdir();
                 trips.add(input.getText().toString());
 
+                try {
+                    selectItem(trips.size() - 1);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
                 mDrawerList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.popup_layout, trips));
 
 
@@ -217,7 +415,23 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
                     trips.remove(getActionBar().getTitle());
                     getActionBar().setTitle("Trips");
                     mTitle = "Trips";
+                    PrintWriter writer = null;
 
+                    try {
+                        writer = new PrintWriter(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + "recent.txt", "UTF-8");
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+
+                    writer.println("Trips");
+                    writer.close();
+
+                        Utility.nameOfEvent.clear();
+                        Utility.startDates.clear();
+
+                        refreshCalendar();
                     mDrawerList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.popup_layout, trips));
                     mDrawerLayout.openDrawer(mDrawerList);
 
@@ -275,10 +489,64 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
 
 
     }
+    protected void setNextMonth() {
+        if (month.get(GregorianCalendar.MONTH) == month
+                .getActualMaximum(GregorianCalendar.MONTH)) {
+            month.set((month.get(GregorianCalendar.YEAR) + 1),
+                    month.getActualMinimum(GregorianCalendar.MONTH), 1);
+        } else {
+            month.set(GregorianCalendar.MONTH,
+                    month.get(GregorianCalendar.MONTH) + 1);
+        }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
+    }
 
+    protected void setPreviousMonth() {
+        if (month.get(GregorianCalendar.MONTH) == month
+                .getActualMinimum(GregorianCalendar.MONTH)) {
+            month.set((month.get(GregorianCalendar.YEAR) - 1),
+                    month.getActualMaximum(GregorianCalendar.MONTH), 1);
+        } else {
+            month.set(GregorianCalendar.MONTH,
+                    month.get(GregorianCalendar.MONTH) - 1);
+        }
+
+    }
+
+    protected void showToast(String string) {
+        Toast.makeText(this, string, Toast.LENGTH_SHORT).show();
+
+    }
+     public void refreshCalendar() {
+        TextView title = (TextView) findViewById(R.id.title);
+
+        adapter.refreshDays();
+        adapter.notifyDataSetChanged();
+        handler.post(calendarUpdater); // generate some calendar items
+
+        title.setText(android.text.format.DateFormat.format("MMMM yyyy", month));
+    }
+    public Runnable calendarUpdater = new Runnable() {
+
+        @Override
+        public void run() {
+            items.clear();
+
+            // Print dates of the current week
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+            String itemvalue;
+            event = Utility.readCalendarEvent(TripActivity.this);
+            Log.d("=====Event====", event.toString());
+            Log.d("=====Date ARRAY====", Utility.startDates.toString());
+
+            for (int i = 0; i < Utility.startDates.size(); i++) {
+                itemvalue = df.format(itemmonth.getTime());
+                itemmonth.add(GregorianCalendar.DATE, 1);
+                items.add(Utility.startDates.get(i).toString());
+            }
+            adapter.setItems(items);
+            adapter.notifyDataSetChanged();
+        }
+    };
 
 }
