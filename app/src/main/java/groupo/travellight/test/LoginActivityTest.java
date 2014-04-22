@@ -55,17 +55,12 @@ public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginAct
     }
 
     public void testLoginRequirements(){
-
-
-
         //no @ symbol
         TouchUtils.tapView(this, editLogin);
         getInstrumentation().sendStringSync("123");
 
         TouchUtils.clickView(this, activity.findViewById(R.id.sign_in_button));
         assertEquals("This email address is invalid", editLogin.getError());
-
-
         //no input
         TouchUtils.tapView(this, editLogin);
         for (int i = 0; i <3; i++){
@@ -75,25 +70,27 @@ public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginAct
          TouchUtils.clickView(this, activity.findViewById(R.id.sign_in_button));
         assertEquals("This field is required", editLogin.getError());
 
-        /*TouchUtils.tapView(this, editLogin);
-        //no @ symbol
-        sendKeys("brant.unger");
-        TouchUtils.clickView(this, activity.findViewById(R.id.sign_in_button));
+    }
+    public void testPasswordRequirements(){
+  /*      //no input
 
-        editLogin.clearComposingText();
-        //TEST PASSWORD
-        TouchUtils.tapView(this, editPassword);
-        //no input
-        sendKeys("");
-        TouchUtils.clickView(this, activity.findViewById(R.id.sign_in_button));
 
+        TouchUtils.clickView(this, activity.findViewById(R.id.sign_in_button));
         assertEquals("This field is required", editPassword.getError());
-        editPassword.clearComposingText();
-        TouchUtils.tapView(this, editPassword);
+*/
         //password too short
-        sendKeys("123");
+        TouchUtils.tapView(this, editPassword);
+        getInstrumentation().sendStringSync("123");
+
         TouchUtils.clickView(this, activity.findViewById(R.id.sign_in_button));
         assertEquals("This password is too short", editPassword.getError());
-        editPassword.clearComposingText();*/
     }
+    public void testPasswordRequirements1(){
+       //no input
+
+
+        TouchUtils.clickView(this, activity.findViewById(R.id.sign_in_button));
+        assertEquals("This field is required", editPassword.getError());
+    }
+
 }
