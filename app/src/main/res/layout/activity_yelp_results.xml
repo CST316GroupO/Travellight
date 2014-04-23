@@ -15,5 +15,5 @@
         android:layout_height="wrap_content"
         android:divider="#b5b5b5"
         android:dividerHeight="1dp"
-        android:listSelector="@drawable/yelp_list_selector" />
+        android:listSelector="@drawable/list_selector" />
 </RelativeLayout>

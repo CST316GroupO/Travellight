@@ -5,4 +5,8 @@
         android:title="@string/yelp_filtersettings"
         android:icon="@drawable/filter"
         android:showAsAction="always|withText"  />
+    <item android:id="@+id/action_search"
+        android:title="@string/menu_yelp_search"
+        android:icon="@drawable/filter"
+        android:showAsAction="always|withText"  />
 </menu>

@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/mainLayout"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/yelp_list_selector"
+    android:background="@drawable/list_selector"
     android:orientation="horizontal"
     android:padding="5dip" >
 
-    <!--  ListRow Left side thumbnail image -->
+    <!--  ListRow Left sied Thumbnail image -->
     <LinearLayout android:id="@+id/thumbnail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -18,14 +17,13 @@
         <ImageView
             android:id="@+id/list_image"
             android:layout_width="50dip"
-            android:layout_height="50dip"
-            android:src="@drawable/images" />
+            android:layout_height="50dip"/>
 
     </LinearLayout>
 
-    <!-- Business/Event -->
+    <!-- Yelp Result Title -->
     <TextView
-        android:id="@+id/businessName"
+        android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/thumbnail"
@@ -36,38 +34,30 @@
         android:textSize="15dip"
         android:textStyle="bold"/>
 
-    <!-- Description -->
+    <!-- Short Description -->
     <TextView
         android:id="@+id/description"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/businessName"
+        android:layout_below="@id/title"
         android:textColor="#343434"
         android:textSize="10dip"
-        android:layout_marginTop="2dip"
+        android:layout_marginTop="1dip"
         android:layout_toRightOf="@+id/thumbnail"
-        android:text="Description of the event or business" />
+        android:text="Description of the Result" />
 
-    <!-- Ratings Stars -->
-    <ImageView
-        android:id="@+id/ratingImg"
-        android:layout_below="@id/description"
-        android:layout_toRightOf="@+id/thumbnail"
-        android:layout_width="75dip"
-        android:layout_height="15dip"
-        android:layout_marginTop="5dip"
-        android:src="@drawable/index" />
-
-    <!-- Rating # -->
+    <!-- Rightend-->
     <TextView
-        android:id="@+id/ratingInt"
-        android:layout_width="fill_parent"
+        android:id="@+id/duration"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/description"
-        android:textColor="#343434"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@id/title"
+        android:gravity="right"
+        android:text="Right end"
+        android:layout_marginRight="5dip"
         android:textSize="10dip"
-        android:layout_marginTop="7dip"
-        android:layout_toRightOf="@+id/ratingImg"
-        android:text="4.0" />
+        android:textColor="#10bcc9"
+        android:textStyle="bold"/>
 
 </RelativeLayout>
