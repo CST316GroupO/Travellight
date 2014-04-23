@@ -57,4 +57,16 @@
         android:layout_marginTop="5dip"
         android:src="@drawable/index" />
 
+    <!-- Rating # -->
+    <TextView
+        android:id="@+id/ratingInt"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/description"
+        android:textColor="#343434"
+        android:textSize="10dip"
+        android:layout_marginTop="7dip"
+        android:layout_toRightOf="@+id/ratingImg"
+        android:text="4.0" />
+
 </RelativeLayout>

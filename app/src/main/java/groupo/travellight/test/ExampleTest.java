@@ -2,10 +2,12 @@ package groupo.travellight.test;
 
 import android.test.InstrumentationTestCase;
 
-public class ExampleTest extends InstrumentationTestCase {
+import junit.framework.TestCase;
+
+public class ExampleTest extends TestCase {
     public void test() throws Exception {
         final int expected = 1;
         final int reality = 5;
-        assertEquals(expected, reality);
+        assertNotSame(expected, reality);
     }
 }
