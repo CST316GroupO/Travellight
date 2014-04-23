@@ -49,7 +49,6 @@ public class LoginGoogle extends Activity implements OnClickListener,
     private boolean mIntentInProgress;
     private boolean mSignInClicked;
     private ConnectionResult mConnectionResult;
-    private SignInButton btnSignIn;
     private String mEmail;
 
 
@@ -60,7 +59,7 @@ public class LoginGoogle extends Activity implements OnClickListener,
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_googlelogin);
 
-        btnSignIn = (SignInButton) findViewById(R.id.btn_sign_in);
+        SignInButton btnSignIn = (SignInButton) findViewById(R.id.btn_sign_in);
 
         btnSignIn.setOnClickListener(this);
 
@@ -73,24 +72,30 @@ public class LoginGoogle extends Activity implements OnClickListener,
 //        File f = new File(destPath);
 //        f.mkdir();
 
-        String filePath = getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail;
+        String destPath = "/data/data/" + getPackageName() + "/databases/TravelLight";
+        File f = new File(destPath);
+        if (!f.exists()) {
+            f.mkdir();
+        }
+
+        String filePath = getApplicationContext().getFilesDir().getPath() + "/" + mEmail;
         File file = new File(filePath);
         if (!file.exists()){
             file.mkdir();
         }
-        try {
-
-            String destPath = "/data/data/" + getPackageName() + "/databases/TravelLight";
-            File f = new File(destPath);
-            if (!f.exists()) {
-                CopyDB(getBaseContext().getAssets().open("mydb"),
-                        new FileOutputStream(destPath));
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//
+//            String destPath = "/data/data/" + getPackageName() + "/databases/TravelLight";
+//            File f = new File(destPath);
+//            if (!f.exists()) {
+//                CopyDB(getBaseContext().getAssets().open("mydb"),
+//                        new FileOutputStream(destPath));
+//            }
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
     }
 
