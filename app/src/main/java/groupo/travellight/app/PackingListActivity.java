@@ -37,7 +37,7 @@ import java.util.List;
  * This Activity handles the Packing List Screen, including
  * viewing the list as well as modifying the elements
  * contained in the list.
- * TODO: Save List, 
+ * TODO: Save List,
  *          -Currently Working on This on a Seprate Project
  */
 public class PackingListActivity extends ActionBarActivity {
@@ -77,6 +77,8 @@ public class PackingListActivity extends ActionBarActivity {
             title = b.getCharSequence("TRIP_NAME");
         }
 
+        setTitle( email  + "'s Packing List");
+
         //Email Loaded
         userTrip = (TextView) findViewById(R.id.textViewUserTrip);
         userTrip.setText(title);
@@ -91,13 +93,13 @@ public class PackingListActivity extends ActionBarActivity {
         //Set up the Add Item and Packing List Tabs Respectively
         TabHost tabHost = (TabHost) findViewById(R.id.tabHost);
         tabHost.setup();
-        TabHost.TabSpec tabSpec = tabHost.newTabSpec("Add Item");
-        tabSpec.setContent(R.id.tabAdd);
-        tabSpec.setIndicator("Add Item");
-        tabHost.addTab(tabSpec);
-        tabSpec = tabHost.newTabSpec("packList");
+        TabHost.TabSpec tabSpec = tabHost.newTabSpec("Packing List");
         tabSpec.setContent(R.id.tabPackList);
         tabSpec.setIndicator("Packing List");
+        tabHost.addTab(tabSpec);
+        tabSpec = tabHost.newTabSpec("Add Item");
+        tabSpec.setContent(R.id.tabAdd);
+        tabSpec.setIndicator("Add Item");
         tabHost.addTab(tabSpec);
 
         //Loading default items
@@ -329,7 +331,6 @@ public class PackingListActivity extends ActionBarActivity {
             imgViewPackingImage.setImageURI(data.getData());
         }
     }
-
 
 
     /**
