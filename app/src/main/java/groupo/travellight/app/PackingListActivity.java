@@ -34,6 +34,7 @@ import java.util.List;
  */
 public class PackingListActivity extends ActionBarActivity {
 
+    TextView userEmail, userTrip;
     EditText itemText;
     ImageView imgViewPackingImage;
     String statusText;
@@ -44,6 +45,26 @@ public class PackingListActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_packing_list);
+
+        //Fetches the Email Field From Previous Activity
+        Intent in = getIntent();
+        Bundle b = in.getExtras();
+        String email;
+        CharSequence title;
+        if (b == null){
+            email = "Test Email";
+            title = "Test Name";
+        }
+        else{
+            email = b.getString("LOGIN_EMAIL");
+            title = b.getCharSequence("TRIP_NAME");
+        }
+
+        //Email Loaded
+        userEmail = (TextView) findViewById(R.id.textViewUserEmail);
+        userEmail.setText(email);
+        userTrip = (TextView) findViewById(R.id.textViewUserTrip);
+        userTrip.setText(title);
 
         itemText = (EditText) findViewById(R.id.itemText);
         imgViewPackingImage = (ImageView) findViewById(R.id.imgViewPackingImage);
@@ -117,6 +138,8 @@ public class PackingListActivity extends ActionBarActivity {
         ListView list = (ListView) findViewById(R.id.packingListView);
         final PackingListAdapter adapter = new PackingListAdapter();
         list.setAdapter(adapter);
+
+        //Method for delete
         list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener()
         {
             @Override
@@ -148,6 +171,42 @@ public class PackingListActivity extends ActionBarActivity {
                 return false;
             }
         });
+
+
+        //Method for Change to Packed
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, final int position, long l)
+            {
+                AlertDialog.Builder adb = new AlertDialog.Builder(PackingListActivity.this);
+                adb.setTitle("Are you sure you want to set the item: : " + PackingItems.get(position).getName() + " to Packed?");
+
+                adb.setNegativeButton("No", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+                        dialogInterface.dismiss();
+                    }
+                });
+
+                adb.setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+                        PackingItems.get(position).setStatus("Packed");
+                        populateList();
+                    }
+                });
+
+                adb.show();
+
+            }
+        });
+
+
     }
 
     //Called to add new packing list item to the list
@@ -166,7 +225,7 @@ public class PackingListActivity extends ActionBarActivity {
     public void onActivityResult(int reqCode, int resCode, Intent data) {
         if (resCode == RESULT_OK){
             if (resCode == 1)
-            { imgViewPackingImage.setImageURI(data.getData()); }
+            imgViewPackingImage.setImageURI(data.getData());
         }
     }
 

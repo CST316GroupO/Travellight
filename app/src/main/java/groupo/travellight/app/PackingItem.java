@@ -21,10 +21,11 @@ public class PackingItem {
         return _name;
     }
 
-
-
     public String getStatus() {
         return _status;
     }
+
+    public void setStatus(String status) {
+        this._status = status; }
 
 }
