@@ -34,13 +34,13 @@ public class CustomAdapter extends BaseAdapter
     /**
      * Constructor for a custom data adapter to handle
      * posting yelp results to a custom user interface
-     * @param a Activity The activity where the data is called from
-     * @param d ArrayList The list containing a hashmap of yelp results
+     * @param activityCaller Activity The activity where the data is called from
+     * @param dataCaller ArrayList The list containing a hashmap of yelp results
      */
-    public CustomAdapter(Activity a, ArrayList<HashMap<String, String>> d)
+    public CustomAdapter(Activity activityCaller, ArrayList<HashMap<String, String>> dataCaller)
     {
-        activity = a;
-        data = d;
+        activity = activityCaller;
+        data = dataCaller;
         inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
     }

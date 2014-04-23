@@ -5,6 +5,8 @@ import android.app.SearchManager;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -24,7 +26,8 @@ import groupo.travellight.yelp.Yelp;
  * @author Brant Unger
  * @version 0.3
  */
-public class YelpResultsActivity extends ListActivity {
+public class YelpResultsActivity extends ListActivity
+{
     private JSONResponse jsonResponse = new JSONResponse();
 
     //  Constants for custom data adapter keys
@@ -35,11 +38,41 @@ public class YelpResultsActivity extends ListActivity {
     public static final String KEY_THUMBURL = "KEY_THUMBURL";
 
     CustomAdapter adapter;
+    ArrayList<HashMap<String, String>> sList = new ArrayList<HashMap<String, String>>();
+
+    // Callback when options menu needs to be created
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.yelp_results, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+
+        switch (item.getItemId())
+        {
+            case R.id.action_filter:
+                // call detail activity for clicked entry
+                Toast.makeText(getApplicationContext(), "Added to event bag",
+                        Toast.LENGTH_LONG).show();
+                return true;
+            case R.id.action_search:
+                onSearchRequested(); //call search dialog
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     // Callback on creation of results activity
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        setTitle("Results"); //set the actionbar title
         handleIntent(getIntent());
     }
 
@@ -54,6 +87,13 @@ public class YelpResultsActivity extends ListActivity {
     // call the search logic
     private void handleIntent(Intent intent)
     {
+        if (adapter != null)
+        {
+            sList.clear();
+            finish();
+            startActivity(intent);
+        }
+
         // If it was the action search intent search yelp
         if (Intent.ACTION_SEARCH.equals(intent.getAction()))
         {
@@ -67,8 +107,6 @@ public class YelpResultsActivity extends ListActivity {
      */
     private void postResults()
     {
-        ArrayList<HashMap<String, String>> sList = new ArrayList<HashMap<String, String>>();
-
         // For every item in the JSON bundle
         // add details from JSON string to a hashmap
         for (int i = 0; i < jsonResponse.getBundleSize(); i++)
