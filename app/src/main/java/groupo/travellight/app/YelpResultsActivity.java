@@ -1,8 +1,13 @@
 package groupo.travellight.app;
 
-import android.app.Activity;
 import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Criteria;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -15,8 +20,11 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 
 import groupo.travellight.yelp.*;
 
@@ -48,6 +56,12 @@ public class YelpResultsActivity extends ActionBarActivity
     // View variables
     private ListView list;
 
+    // GPS variables
+    private LocationManager locationManager;
+    private String provider;
+    private Location location;
+    private String cityName = "Seattle";
+
     // Callback when options menu needs to be created
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
@@ -78,6 +92,7 @@ public class YelpResultsActivity extends ActionBarActivity
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        updateGPS();
 
         /**************************************/
         setContentView(R.layout.activity_yelp_results);
@@ -178,7 +193,8 @@ public class YelpResultsActivity extends ActionBarActivity
     private class onListViewItemCLick implements ListView.OnItemClickListener
     {
         @Override
-        public void onItemClick(AdapterView parent, View view, int position, long id) {
+        public void onItemClick(AdapterView parent, View view, int position, long id)
+        {
             // call detail activity for clicked entry
             TravelLight myApp = (TravelLight) getApplication();
             myApp.addEventToList(sList.get(position));
@@ -187,6 +203,33 @@ public class YelpResultsActivity extends ActionBarActivity
                     Toast.LENGTH_LONG).show();
         }
 
+    }
+
+    /**
+     * Update location to be used for search
+     */
+    private void updateGPS()
+    {
+        locationManager = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
+        Criteria c = new Criteria();
+        provider = locationManager.getBestProvider(c, false);
+        location = locationManager.getLastKnownLocation(provider);
+
+        if (location != null)
+        {
+            double lng = location.getLongitude();
+            double lat = location.getLatitude();
+            Geocoder gcd = new Geocoder(getBaseContext(), Locale.getDefault());
+            List<Address> addresses;
+            try
+            {
+                addresses = gcd.getFromLocation(lat, lng, 1);
+                cityName = addresses.get(0).getLocality();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -208,7 +251,7 @@ public class YelpResultsActivity extends ActionBarActivity
         {
             try
             {
-                stringJSON = new Yelp().search(query[0], "Mesa, AZ");
+                stringJSON = new Yelp().search(query[0], cityName);
                 jsonResponse.setResponse(stringJSON);
                 jsonResponse.parseBusiness(); //parse JSON data
             }
