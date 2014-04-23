@@ -347,6 +347,11 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
     //comment
     public void gotoPacking(MenuItem item){
         Intent intent = new Intent(this,PackingListActivity.class);
+        //Pass the Email Field
+        intent.putExtra("LOGIN_EMAIL", mEmail);
+        //Pass the Trip Field
+        intent.putExtra("TRIP_NAME", mTitle);
+
         startActivity(intent);
     }
     public void removeTrip(MenuItem item){
