@@ -5,34 +5,34 @@
     
 
 
-    <item android:id="@+id/action_create"
-        android:icon="@drawable/ic_action_create"
-        android:title="Create new trip"
-        android:onClick="openPopup"
-        app:showAsAction="always"  />
-    <item android:id="@+id/action_trash"
-        android:icon="@drawable/ic_trash"
-        android:title="Remove trip"
-        android:onClick="removeTrip"
-        app:showAsAction="always"  />
+
     <item android:id="@+id/menu_yelpsearch"
         android:icon="@android:drawable/ic_menu_search"
         android:title="Search yelp"
-        android:showAsAction="always"/>
-    <item android:id="@+id/action_packing"
-        android:icon="@drawable/packinglist"
-        android:title="Packing list"
-        android:onClick="gotoPacking"
-        android:showAsAction="always"/>
+        app:showAsAction="always"/>
     <item android:id="@+id/action_events"
         android:icon="@drawable/bag"
         android:title="Event bag"
         android:onClick="gotoEvent"
-        android:showAsAction="ifRoom"/>
+        app:showAsAction="always"/>
     <item android:id="@+id/action_friends"
         android:title="Share/Friends"
-        android:showAsAction="ifRoom"/>
-
+        app:showAsAction="ifRoom"/>
+    <item android:id="@+id/action_packing"
+        android:icon="@drawable/packinglist"
+        android:title="Packing list"
+        android:onClick="gotoPacking"
+        app:showAsAction="ifRoom"/>
+    <item android:id="@+id/action_create"
+        android:icon="@drawable/ic_action_create"
+        android:title="Create new trip"
+        android:onClick="openPopup"
+        app:showAsAction="never"  />
+    <item android:id="@+id/action_trash"
+        android:icon="@drawable/ic_trash"
+        android:title="Remove trip"
+        android:onClick="removeTrip"
+        app:showAsAction="never"  />
 
 
 </menu>

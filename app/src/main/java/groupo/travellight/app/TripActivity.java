@@ -1,18 +1,23 @@
 package groupo.travellight.app;
 
+import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Point;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.method.Touch;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -20,8 +25,10 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -29,8 +36,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.Locale;
-
+import groupo.travellight.yelp.*;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -49,6 +57,8 @@ import android.widget.Toast;
 import java.io.File;
 import java.util.ArrayList;
 
+import groupo.travellight.yelp.CustomAdapter;
+
 public class TripActivity extends ActionBarActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks{
     private ArrayList<String> trips = new ArrayList();
     private DrawerLayout mDrawerLayout;
@@ -59,6 +69,8 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
     private CharSequence mTitle;
     private BufferedReader bRead;
     private File folder;
+    private String currentTrip;
+    private int tripPosition;
 
     private File[] listOfFiles;
     //Calendar
@@ -70,9 +82,19 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
     public ArrayList<String> items; // container to store calendar items which
     // needs showing the event marker
     ArrayList<String> event;
-    LinearLayout rLayout;
+    ListView rLayout;
     ArrayList<String> date;
     ArrayList<String> desc;
+    private GridView gridview;
+    private String selectedGridDate;
+    private int currentView = -1;
+    private View currentV;
+    private View previousV;
+    private int previousView = -1;
+    private DrawerLayout mDrawerLayout1;
+    private ListView mDrawerList1;
+    private CustomAdapter drawerAdapter1;
+    private ActionBarDrawerToggle mDrawerToggle1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,8 +103,43 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
         setContentView(R.layout.activity_trip);
         //setContentView(R.layout.activity_trip);
         Locale.setDefault(Locale.US);
+        //drawer 2
+        ArrayList<HashMap<String, String>> sList = new ArrayList<HashMap<String, String>>();
+        mDrawerLayout1 = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList1 = (ListView) findViewById(R.id.yelp_left_drawer);
 
-        rLayout = (LinearLayout) findViewById(R.id.text);
+        TravelLight myApp = (TravelLight) getApplication();
+        drawerAdapter1 = new CustomAdapter(this, myApp.getEventList());
+        if (drawerAdapter1 != null){
+        mDrawerList1.setAdapter(drawerAdapter1);
+
+        }
+        mDrawerList1.setOnItemClickListener(new DrawerItemClickListener1());
+        // Set the list's click listener
+        //mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+        mDrawerToggle1 = new ActionBarDrawerToggle(this, mDrawerLayout1,
+                R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
+
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                getActionBar().setTitle("Results");
+                //invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                getActionBar().setTitle("Event Bag");
+                //invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+        };
+
+        // Set the drawer toggle as the DrawerListener
+        mDrawerLayout1.setDrawerListener(mDrawerToggle1);
+        //drawer 2 end
+        rLayout = (ListView) findViewById(R.id.event);
         month = (GregorianCalendar) GregorianCalendar.getInstance();
         itemmonth = (GregorianCalendar) month.clone();
 
@@ -90,12 +147,47 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
 
         adapter = new CalendarAdapter(this, month);
 
-        GridView gridview = (GridView) findViewById(R.id.gridview);
+        gridview = (GridView) findViewById(R.id.gridview);
         gridview.setAdapter(adapter);
 
         handler = new Handler();
         handler.post(calendarUpdater);
+        TextView txtV = (TextView) findViewById(R.id.textView);
 
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int screenWidth = size.x; // int screenWidth = display.getWidth(); on API < 13
+        int screenHeight = size.y; // int screenHeight = display.getHeight(); on API <13
+
+        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(Math.round(screenWidth/7), ViewGroup.LayoutParams.WRAP_CONTENT); // This should set the width and height of the TextView
+        lp.setMargins(0, 40, 0, 0); // This serves as the settings for the left and top position
+
+        txtV.setLayoutParams(lp);
+        txtV = (TextView) findViewById(R.id.textView2);
+        lp = new RelativeLayout.LayoutParams(Math.round(screenWidth/7), ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.setMargins(Math.round(screenWidth/7), 40, 0, 0);
+        txtV.setLayoutParams(lp);
+        txtV = (TextView) findViewById(R.id.textView3);
+        lp = new RelativeLayout.LayoutParams(Math.round(screenWidth/7), ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.setMargins(Math.round(2 * screenWidth / 7), 40, 0, 0);
+        txtV.setLayoutParams(lp);
+        txtV = (TextView) findViewById(R.id.textView4);
+        lp = new RelativeLayout.LayoutParams(Math.round(screenWidth/7), ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.setMargins(Math.round(3 * screenWidth / 7), 40, 0, 0);
+        txtV.setLayoutParams(lp);
+        txtV = (TextView) findViewById(R.id.textView5);
+        lp = new RelativeLayout.LayoutParams(Math.round(screenWidth/7), ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.setMargins(Math.round(4 * screenWidth / 7), 40, 0, 0);
+        txtV.setLayoutParams(lp);
+        txtV = (TextView) findViewById(R.id.textView6);
+        lp = new RelativeLayout.LayoutParams(Math.round(screenWidth/7), ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.setMargins(Math.round(5 * screenWidth / 7), 40, 0, 0);
+        txtV.setLayoutParams(lp);
+        txtV = (TextView) findViewById(R.id.textView7);
+        lp = new RelativeLayout.LayoutParams(Math.round(screenWidth/7), ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.setMargins(Math.round(6 * screenWidth / 7), 40, 0, 0);
+        txtV.setLayoutParams(lp);
         TextView title = (TextView) findViewById(R.id.title);
         title.setText(android.text.format.DateFormat.format("MMMM yyyy", month));
 
@@ -124,14 +216,15 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
         gridview.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
-                // removing the previous view if added
-                if (((LinearLayout) rLayout).getChildCount() > 0) {
-                    ((LinearLayout) rLayout).removeAllViews();
-                }
+                previousView = currentView;
+                currentView = position;
+                previousV = currentV;
+                currentV = v;
+
                 desc = new ArrayList<String>();
                 date = new ArrayList<String>();
-                ((CalendarAdapter) parent.getAdapter()).setSelected(v);
-                String selectedGridDate = CalendarAdapter.dayString
+                adapter.setSelected(v);
+                selectedGridDate = CalendarAdapter.dayString
                         .get(position);
                 String[] separatedTime = selectedGridDate.split("-");
                 String gridvalueString = separatedTime[2].replaceFirst("^0*",
@@ -147,11 +240,6 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
                 }
                 ((CalendarAdapter) parent.getAdapter()).setSelected(v);
 
-                for (int i = 0; i < Utility.startDates.size(); i++) {
-                    if (Utility.startDates.get(i).equals(selectedGridDate)) {
-                        desc.add(Utility.nameOfEvent.get(i));
-                    }
-                }
 
                 if (desc.size() > 0) {
                     for (int i = 0; i < desc.size(); i++) {
@@ -233,10 +321,12 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
         // Set the drawer toggle as the DrawerListener
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         getActionBar().setDisplayHomeAsUpEnabled(true);
-        if (listOfFiles.length <= 1){
-            mDrawerLayout.openDrawer(mDrawerList);
-            showPopUp();
-            Toast.makeText(getApplicationContext(), "Create a new trip.", Toast.LENGTH_LONG).show();
+        if (listOfFiles != null){
+            if (listOfFiles.length <= 1){
+                mDrawerLayout.openDrawer(mDrawerList);
+                showPopUp();
+                Toast.makeText(getApplicationContext(), "Create a new trip.", Toast.LENGTH_LONG).show();
+            }
         }
         String t = "";
         File f = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + "recent.txt");
@@ -252,6 +342,7 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
                 e.printStackTrace();
             }
             if (!t.equals("Trips")){
+                Log.d("================trip name==============","..." + t);
                 try {
                     selectItem(trips.indexOf(t));
                 } catch (IOException e) {
@@ -263,7 +354,48 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
 
 
     }
+    public void clickItem(View v,
+                            int position) {
 
+
+        desc = new ArrayList<String>();
+        date = new ArrayList<String>();
+        adapter.setSelected(v);
+        selectedGridDate = CalendarAdapter.dayString
+                .get(position);
+        String[] separatedTime = selectedGridDate.split("-");
+        String gridvalueString = separatedTime[2].replaceFirst("^0*",
+                "");// taking last part of date. ie; 2 from 2012-12-02.
+        int gridvalue = Integer.parseInt(gridvalueString);
+        // navigate to next or previous month on clicking offdays.
+        if ((gridvalue > 10) && (position < 8)) {
+            setPreviousMonth();
+            refreshCalendar();
+        } else if ((gridvalue < 7) && (position > 28)) {
+            setNextMonth();
+            refreshCalendar();
+        }
+        adapter.setSelected(v);
+
+
+        if (desc.size() > 0) {
+            for (int i = 0; i < desc.size(); i++) {
+                TextView rowTextView = new TextView(TripActivity.this);
+
+                // set some properties of rowTextView or something
+                rowTextView.setText(desc.get(i));
+                rowTextView.setTextColor(Color.BLACK);
+
+                // add the textview to the linearlayout
+                rLayout.addView(rowTextView);
+
+            }
+
+        }
+
+        desc = null;
+
+    }
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -295,10 +427,19 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
 
         }
     }
+    private class DrawerItemClickListener1 implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView parent, View view, int position, long id) {
+
+            rLayout.addView(drawerAdapter1.getView(position, view, parent));
+
+
+        }
+    }
 
     /** Swaps fragments in the main content view */
     private void selectItem(int position) throws IOException {
-
+        currentTrip = trips.get(position);
 
         // Highlight the selected item, update the title, and close the drawer
         mDrawerList.setItemChecked(position, true);
@@ -313,20 +454,31 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
         Utility.nameOfEvent.clear();
         Utility.startDates.clear();
         File f = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + trips.get(position).toString() + "/" + "events.txt");
+
         if (f.exists()){
-        BufferedReader in = new BufferedReader(new FileReader(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + trips.get(position).toString() + "/" + "events.txt"));
+            BufferedReader in = new BufferedReader(new FileReader(f));
 
-        Utility.nameOfEvent.add(in.readLine());
-        Utility.startDates.add(Utility.getDate(Long.parseLong(in.readLine())));
+            String x = in.readLine();
+            while(x != null){
+                if(!Utility.startDates.contains(x)){
+                    Utility.startDates.add(x);
+                }
+                x = in.readLine();
+            }
+
 
         }
-        else{
-            writer = new PrintWriter(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + trips.get(position).toString() + "/" + "events.txt", "UTF-8");
-            writer.println("Biking");
-            writer.println("1398051792000");
-            writer.close();
+
+
+        if (!Utility.startDates.isEmpty() && tripPosition!= position){
+            String[] separatedTime = Utility.startDates.get(0).split("-");
+            Log.d("startyear", Integer.toString(Integer.parseInt(separatedTime[0])));
+            Log.d("startyear1", Integer.toString(Integer.valueOf(separatedTime[0])));
+        month.set(Integer.parseInt(separatedTime[0]), Integer.parseInt(separatedTime[1])-1, 1);
         }
+        tripPosition = position;
         refreshCalendar();
+
 
     }
 
@@ -340,9 +492,35 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
         showPopUp();
         Toast.makeText(this, "Enter trip name.", Toast.LENGTH_LONG).show();
     }
-    public void gotoEvent(MenuItem item){
-        Intent intent = new Intent(this,EventsBag.class);
-        startActivity(intent);
+    public void gotoEvent(MenuItem item) throws FileNotFoundException, UnsupportedEncodingException {
+        //Intent intent = new Intent(this,EventsBag.class);
+        //startActivity(intent);
+        adapter.setV(currentV);
+        File log = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + currentTrip + "/" + "events.txt");
+
+        try{
+            if(!log.exists()){
+
+                log.createNewFile();
+            }
+
+            FileWriter fileWriter = new FileWriter(log, true);
+
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            bufferedWriter.write(selectedGridDate);
+            bufferedWriter.newLine();
+            bufferedWriter.close();
+
+
+        } catch(IOException e) {
+
+        }
+
+        try {
+            selectItem(tripPosition);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     //comment
     public void gotoPacking(MenuItem item){
@@ -356,58 +534,58 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
     }
     public void removeTrip(MenuItem item){
         if (!getActionBar().getTitle().equals("Trips")){
-        showRemove();
-        Toast.makeText(this, "This will permanently remove your trip.", Toast.LENGTH_LONG).show();
+            showRemove();
+            Toast.makeText(this, "This will permanently remove your trip.", Toast.LENGTH_LONG).show();
         }
         else{
             Toast.makeText(this, "You must select a Trip to remove.", Toast.LENGTH_LONG).show();
         }
     }
     private void showPopUp() {
-    AlertDialog.Builder helpBuilder = new AlertDialog.Builder(this);
-    helpBuilder.setTitle("Create Trip");
-    final EditText input = new EditText(this);
-    input.setSingleLine();
-    helpBuilder.setView(input);
-    //Save button
-    helpBuilder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
-        public void onClick(DialogInterface dialog, int which) {
-            File f = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + input.getText().toString());
-            if (!f.exists()){
+        AlertDialog.Builder helpBuilder = new AlertDialog.Builder(this);
+        helpBuilder.setTitle("Create Trip");
+        final EditText input = new EditText(this);
+        input.setSingleLine();
+        helpBuilder.setView(input);
+        //Save button
+        helpBuilder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                File f = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + input.getText().toString());
+                if (!f.exists()){
 
-            f.mkdir();
-                trips.add(input.getText().toString());
+                    f.mkdir();
+                    trips.add(input.getText().toString());
 
-                try {
-                    selectItem(trips.size() - 1);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    try {
+                        selectItem(trips.size() - 1);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    mDrawerList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.popup_layout, trips));
+
+
                 }
-
-                mDrawerList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.popup_layout, trips));
-
-
+                else{
+                    Toast.makeText(getApplicationContext(), "Trip name exists! Try again.", Toast.LENGTH_LONG).show();
+                }
             }
-            else{
-                Toast.makeText(getApplicationContext(), "Trip name exists! Try again.", Toast.LENGTH_LONG).show();
+        });
+        //Cancel button
+        helpBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Do nothing, just close the dialog box
             }
-        }
-    });
-    //Cancel button
-    helpBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
-            // Do nothing, just close the dialog box
-        }
-    });
-    // Remember, create doesn't show the dialog
-    AlertDialog helpDialog = helpBuilder.create();
-    helpDialog.show();
+        });
+        // Remember, create doesn't show the dialog
+        AlertDialog helpDialog = helpBuilder.create();
+        helpDialog.show();
 
-}
+    }
     private void showRemove() {
         AlertDialog.Builder helpBuilder = new AlertDialog.Builder(this);
-        helpBuilder.setTitle("Remove trip " + getActionBar().getTitle()+ "?");
+        helpBuilder.setTitle("Remove trip " + getActionBar().getTitle() + "?");
 
 
         //Save button
@@ -433,10 +611,10 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
                     writer.println("Trips");
                     writer.close();
 
-                        Utility.nameOfEvent.clear();
-                        Utility.startDates.clear();
+                    Utility.nameOfEvent.clear();
+                    Utility.startDates.clear();
 
-                        refreshCalendar();
+                    refreshCalendar();
                     mDrawerList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.popup_layout, trips));
                     mDrawerLayout.openDrawer(mDrawerList);
 
@@ -461,7 +639,7 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        
+
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.trip, menu);
         return true;
@@ -483,10 +661,10 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
                 onSearchRequested(); //call search dialog
                 return true;
             case R.id.action_friends:
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
-                ft.replace(R.id.content_frame, new FriendsList());//change add to replace?
-                ft.addToBackStack(null);
-                ft.commit();
+                Intent intent = new Intent(this,FriendsListActivity.class);
+                intent.putExtra("LOGIN_EMAIL", mEmail);
+                intent.putExtra("TRIP_NAME", mTitle);
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -495,6 +673,9 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
 
     }
     protected void setNextMonth() {
+        selectedGridDate = null;
+        currentView = -1;
+        adapter.setV(null);
         if (month.get(GregorianCalendar.MONTH) == month
                 .getActualMaximum(GregorianCalendar.MONTH)) {
             month.set((month.get(GregorianCalendar.YEAR) + 1),
@@ -507,6 +688,9 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
     }
 
     protected void setPreviousMonth() {
+        selectedGridDate = null;
+        currentView = -1;
+        adapter.setV(null);
         if (month.get(GregorianCalendar.MONTH) == month
                 .getActualMinimum(GregorianCalendar.MONTH)) {
             month.set((month.get(GregorianCalendar.YEAR) - 1),
@@ -515,28 +699,51 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
             month.set(GregorianCalendar.MONTH,
                     month.get(GregorianCalendar.MONTH) - 1);
         }
-
+        Log.d("month", Integer.toString(month.get(GregorianCalendar.MONTH)));
+        Log.d("year", Integer.toString(month.get(GregorianCalendar.YEAR)));
     }
 
     protected void showToast(String string) {
         Toast.makeText(this, string, Toast.LENGTH_SHORT).show();
 
     }
-     public void refreshCalendar() {
+    public void refreshCalendar() {
         TextView title = (TextView) findViewById(R.id.title);
 
         adapter.refreshDays();
         adapter.notifyDataSetChanged();
         handler.post(calendarUpdater); // generate some calendar items
-
         title.setText(android.text.format.DateFormat.format("MMMM yyyy", month));
     }
+    @Override
+    public void onResume(){
+        super.onResume();
+        File folder = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail);
+        File[] listOfFiles = folder.listFiles();
+        if (listOfFiles != null){
+            for (int i = 0; i < listOfFiles.length; i++)
+            {
+
+                if (listOfFiles[i].isDirectory())
+                {
+                    if (!trips.contains(listOfFiles[i].getName())) {
+                        trips.add(listOfFiles[i].getName());
+                    }
+
+                }
+            }
+        }
+
+        ArrayAdapter adapter =(ArrayAdapter) mDrawerList.getAdapter();//mDrawerAdapter.notifyDataSetChanged();
+        adapter.notifyDataSetChanged();
+        drawerAdapter1.notifyDataSetChanged();
+    }
+
     public Runnable calendarUpdater = new Runnable() {
 
         @Override
         public void run() {
             items.clear();
-
             // Print dates of the current week
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
             String itemvalue;
@@ -545,12 +752,25 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
             Log.d("=====Date ARRAY====", Utility.startDates.toString());
 
             for (int i = 0; i < Utility.startDates.size(); i++) {
+                Log.d("=====Date ARRAY====", Utility.startDates.get(i).toString());
                 itemvalue = df.format(itemmonth.getTime());
                 itemmonth.add(GregorianCalendar.DATE, 1);
                 items.add(Utility.startDates.get(i).toString());
             }
+
+
             adapter.setItems(items);
+            if (currentV != null){
+                Log.d("=====One====", event.toString());
+
+            }
             adapter.notifyDataSetChanged();
+            if (currentV != null){
+                Log.d("=====Two====", event.toString());
+
+            }
+
+            //adapter.clickFocus();
         }
     };
 

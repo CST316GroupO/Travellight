@@ -9,6 +9,7 @@ import java.util.Locale;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,7 @@ public class CalendarAdapter extends BaseAdapter {
 	private GregorianCalendar selectedDate;
 	int firstDay;
 	int maxWeeknumber;
+    boolean selected = false;
 	int maxP;
 	int calMaxP;
 	int lastWeekDay;
@@ -39,8 +41,12 @@ public class CalendarAdapter extends BaseAdapter {
 	private ArrayList<String> items;
 	public static List<String> dayString;
 	private View previousView;
-
-	public CalendarAdapter(Context c, GregorianCalendar monthCalendar) {
+    private boolean previousV;
+    private View focusView;
+    private int startMonth;
+    private int startYear;
+    private View setView;
+    public CalendarAdapter(Context c, GregorianCalendar monthCalendar) {
 		CalendarAdapter.dayString = new ArrayList<String>();
 		Locale.setDefault(Locale.US);
 		month = monthCalendar;
@@ -104,17 +110,33 @@ public class CalendarAdapter extends BaseAdapter {
 			// setting curent month's days in blue color.
 			dayView.setTextColor(Color.BLUE);
 		}
+        String date = dayString.get(position);
+        ImageView iw = (ImageView) v.findViewById(R.id.date_icon);
+        if (date.length() > 0 && items != null && items.contains(date)) {
+            if (!selected){
+                focusView = v;
+                startMonth = Integer.parseInt(separatedTime[1])-1;
+                startYear = Integer.parseInt(separatedTime[0]);
+                Log.d("=== VIEW SET === ", "SET");
+                selected = true;
+                clickFocus();
+            }
+            v.setBackgroundResource(R.drawable.calendar_bg_orange);
+        } else {
+            v.setBackgroundResource(R.drawable.calendar_cell);
+        }
+		if (date.equals(curentDateString) && !selected) {
+            startMonth = Integer.parseInt(separatedTime[1])-1;
+            startYear = Integer.parseInt(separatedTime[0]);
 
-		if (dayString.get(position).equals(curentDateString)) {
-			setSelected(v);
-			previousView = v;
-		} else {
-			v.setBackgroundResource(R.drawable.list_item_background);
 		}
+        if (v.equals(setView) && setView!= null){
+            setSelected(v);
+        }
 		dayView.setText(gridvalue);
 
 		// create date string for comparison
-		String date = dayString.get(position);
+
 
 		if (date.length() == 1) {
 			date = "0" + date;
@@ -125,20 +147,57 @@ public class CalendarAdapter extends BaseAdapter {
 		}
 
 		// show icon if date is not empty and it exists in the items array
-		ImageView iw = (ImageView) v.findViewById(R.id.date_icon);
-		if (date.length() > 0 && items != null && items.contains(date)) {
-			iw.setVisibility(View.VISIBLE);
-		} else {
-			iw.setVisibility(View.INVISIBLE);
-		}
+
 		return v;
 	}
-
+    public void clickFocus(){
+        if (focusView != null){
+        focusView.performClick();
+        }
+        else
+        {
+            Log.d("why null", "focus null");
+        }
+    }
+    public void setV(View v){
+        setView = v;
+        if (v!= null){
+        previousV = true;
+        }
+        else{
+            previousV = false;
+            previousView = null;
+        }
+    }
+    public int getStartMonth(){
+        return startMonth;
+    }
+    public int getStartYear(){
+        return startYear;
+    }
 	public View setSelected(View view) {
+        int d = view.getDrawingCacheBackgroundColor();
+
 		if (previousView != null) {
-			previousView.setBackgroundResource(R.drawable.list_item_background);
+            if (!previousV){
+			previousView.setBackgroundResource(R.drawable.calendar_cell);
+            }
+            else{
+            previousView.setBackgroundResource(R.drawable.calendar_bg_orange);
+            }
 		}
 		previousView = view;
+        if (view.getBackground().getConstantState().equals
+                (mContext.getResources().getDrawable(R.drawable.calendar_bg_orange).getConstantState())){
+
+            previousV = true;
+        }
+        else if (view.getBackground().getConstantState().equals
+                (mContext.getResources().getDrawable(R.drawable.calendar_cell).getConstantState())){
+
+            previousV = false;
+        }
+
 		view.setBackgroundResource(R.drawable.calendar_cel_selectl);
 		return view;
 	}

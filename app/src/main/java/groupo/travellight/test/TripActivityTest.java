@@ -41,19 +41,9 @@ public class TripActivityTest extends ActivityInstrumentationTestCase2<TripActiv
 
     }
 
-    @SmallTest
-    public void testViews(){
-
-        assertNotNull(tripDrawer);
-
-    }
-
-    public void testOnScreen(){
-        ViewAsserts.assertOnScreen(tripDrawer.getRootView(),tripDrawer );
-        TouchUtils.tapView(this, tripDrawer);
 
 
-    }
+
 
 
 }
