@@ -59,6 +59,10 @@
             android:name="groupo.travellight.app.EventsBag"
             android:label="EventsBagActivity" >
         </activity>
+        <activity
+            android:name="groupo.travellight.app.PhotoGallery"
+            android:label="PhotoGallery" >
+        </activity>
 
         <activity
             android:label="@string/app_name"

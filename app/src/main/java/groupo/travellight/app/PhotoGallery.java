@@ -2,19 +2,47 @@ package groupo.travellight.app;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.Gallery;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 /**
  * Created by Tommy Pham on 4/11/2014.
  */
-public class PhotoGallery extends Activity
-{
+public class PhotoGallery extends Activity {
+    //testing if the gallery will show images will be removed later.
+    public Integer[] imageIds = {
+            R.drawable.dot,
+            R.drawable.appicon,
+            R.drawable.arrow_right,
+            R.drawable.arrow_left
+    };
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_gallery);
+
+        Gallery gallery = (Gallery) findViewById(R.id.gallery_layout);
+        gallery.setAdapter(new ImageAdapter(this));
+
+        final ImageView imageView = (ImageView) findViewById(R.id.gallery_display);
+
+        gallery.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                Toast.makeText(getApplicationContext(), "pic: " + position, Toast.LENGTH_SHORT).show();
+                imageView.setImageResource(imageIds[position]);
+            }
+        });
     }
 
     @Override
@@ -35,5 +63,37 @@ public class PhotoGallery extends Activity
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public class ImageAdapter extends BaseAdapter
+    {
+        private Context context;
+
+        public  ImageAdapter(Context context)
+        {
+            this.context = context;
+        }
+
+        @Override
+        public int getCount() {
+            return imageIds.length;
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return position;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View view, ViewGroup viewGroup) {
+            ImageView imageView = new ImageView(context);
+            imageView.setImageResource(imageIds[position]);
+            return imageView;
+        }
     }
 }
