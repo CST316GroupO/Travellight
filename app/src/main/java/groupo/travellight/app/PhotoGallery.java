@@ -120,28 +120,28 @@ public class PhotoGallery extends Activity {
 
         @Override
         public View getView(int position, View view, ViewGroup viewGroup) {
-            ImageView imageView;
+            ImageView imgView;
             if(view == null)
             {
-                imageView = new ImageView(context);
+                imgView = new ImageView(context);
                 //move cursor to current position
                 cursor.moveToPosition(position);
                 //get the current value for the requested column
                 int imageID = cursor.getInt(columnIndex);
                 //set the content of the image based on the provided URI
-                imageView.setImageURI(Uri.withAppendedPath(MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI, "" + imageID));
-                imageView.setLayoutParams(new Gallery.LayoutParams(150, 100));
-                imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                imageView.setPadding(10, 10, 10, 10);
+                imgView.setImageURI(Uri.withAppendedPath(MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI, "" + imageID));
+                imgView.setLayoutParams(new Gallery.LayoutParams(150, 100));
+                imgView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                imgView.setPadding(10, 10, 10, 10);
             }
             else
             {
-                imageView = (ImageView) view;
+                imgView = (ImageView) view;
             }
             //imageView.setLayoutParams(new Gallery.LayoutParams(150, 100));
             //imageView.setPadding(10, 10, 10, 10);
             //imageView.setImageResource(imageIds[position]);
-            return imageView;
+            return imgView;
         }
     }
 }
