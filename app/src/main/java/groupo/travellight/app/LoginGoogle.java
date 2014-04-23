@@ -1,10 +1,17 @@
 package groupo.travellight.app;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
+import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -30,35 +37,30 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 
+import groupo.travellight.db.DBUser;
+
 public class LoginGoogle extends Activity implements OnClickListener,
         ConnectionCallbacks, OnConnectionFailedListener {
 
     private static final int RC_SIGN_IN = 0;
-    private static final String TAG = "MainActivity";
-    private static final int PROFILE_PIC_SIZE = 100;
+    //private static final String TAG = "MainActivity";
+    //private static final int PROFILE_PIC_SIZE = 100;
     private GoogleApiClient mGoogleApiClient;
     private boolean mIntentInProgress;
     private boolean mSignInClicked;
     private ConnectionResult mConnectionResult;
-
     private SignInButton btnSignIn;
-    private Button btnSignOut, btnRevokeAccess;
-    private ImageView imgProfilePic;
-    private TextView txtName, txtEmail;
-    private LinearLayout llProfileLayout;
+    private String mEmail;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        DBUser db = new DBUser(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_googlelogin);
 
         btnSignIn = (SignInButton) findViewById(R.id.btn_sign_in);
-        //btnSignOut = (Button) findViewById(R.id.btn_sign_out);
-        //btnRevokeAccess = (Button) findViewById(R.id.btn_revoke_access);
-        //imgProfilePic = (ImageView) findViewById(R.id.imgProfilePic);
-        //txtName = (TextView) findViewById(R.id.txtName);
-        //txtEmail = (TextView) findViewById(R.id.txtEmail);
-        //llProfileLayout = (LinearLayout) findViewById(R.id.llProfile);
 
         btnSignIn.setOnClickListener(this);
 
@@ -66,6 +68,30 @@ public class LoginGoogle extends Activity implements OnClickListener,
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this).addApi(Plus.API, null)
                 .addScope(Plus.SCOPE_PLUS_LOGIN).build();
+
+//        String destPath = "/data/data/" + getPackageName() + "/databases/TravelLight";
+//        File f = new File(destPath);
+//        f.mkdir();
+
+        String filePath = getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail;
+        File file = new File(filePath);
+        if (!file.exists()){
+            file.mkdir();
+        }
+        try {
+
+            String destPath = "/data/data/" + getPackageName() + "/databases/TravelLight";
+            File f = new File(destPath);
+            if (!f.exists()) {
+                CopyDB(getBaseContext().getAssets().open("mydb"),
+                        new FileOutputStream(destPath));
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     protected void onStart() {
@@ -132,67 +158,27 @@ public class LoginGoogle extends Activity implements OnClickListener,
 
     @Override
     public void onConnected(Bundle arg0) {
+
         mSignInClicked = false;
         Toast.makeText(this, "User is connected!", Toast.LENGTH_LONG).show();
 
-        // Get user's information
-        getProfileInformation();
+        mEmail = Plus.AccountApi.getAccountName(mGoogleApiClient);
 
+        Intent myIntent = new Intent(this, TripActivity.class);
+        myIntent.putExtra("LOGIN_EMAIL", mEmail);
+        SharedPreferences preferences = getSharedPreferences("MySavedStuff", 0);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("userEmail", mEmail);
+        editor.commit();
+        startActivity(myIntent);
         // Update the UI after signin
-        updateUI(true);
+        //updateUI(true);
 
-    }
-
-    private void updateUI(boolean isSignedIn) {
-        if (isSignedIn) {
-            btnSignIn.setVisibility(View.GONE);
-            btnSignOut.setVisibility(View.VISIBLE);
-            btnRevokeAccess.setVisibility(View.VISIBLE);
-            llProfileLayout.setVisibility(View.VISIBLE);
-        } else {
-            btnSignIn.setVisibility(View.VISIBLE);
-            btnSignOut.setVisibility(View.GONE);
-            btnRevokeAccess.setVisibility(View.GONE);
-            llProfileLayout.setVisibility(View.GONE);
-        }
-    }
-
-    private void getProfileInformation() {
-        try {
-            if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
-                Person currentPerson = Plus.PeopleApi
-                        .getCurrentPerson(mGoogleApiClient);
-                String personName = currentPerson.getDisplayName();
-                String personPhotoUrl = currentPerson.getImage().getUrl();
-                String personGooglePlusProfile = currentPerson.getUrl();
-                String email = Plus.AccountApi.getAccountName(mGoogleApiClient);
-
-                Log.e(TAG, "Name: " + personName + ", plusProfile: "
-                        + personGooglePlusProfile + ", email: " + email
-                        + ", Image: " + personPhotoUrl);
-
-                txtName.setText(personName);
-                txtEmail.setText(email);
-
-                personPhotoUrl = personPhotoUrl.substring(0,
-                        personPhotoUrl.length() - 2)
-                        + PROFILE_PIC_SIZE;
-
-                new LoadProfileImage(imgProfilePic).execute(personPhotoUrl);
-
-            } else {
-                Toast.makeText(getApplicationContext(),
-                        "Person information is null", Toast.LENGTH_LONG).show();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
     public void onConnectionSuspended(int arg0) {
         mGoogleApiClient.connect();
-        updateUI(false);
     }
 
     @Override
@@ -213,54 +199,42 @@ public class LoginGoogle extends Activity implements OnClickListener,
         }
     }
 
-//    private void signOutFromGplus() {
-//        if (mGoogleApiClient.isConnected()) {
-//            Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-//            mGoogleApiClient.disconnect();
-//            mGoogleApiClient.connect();
-//            updateUI(false);
-//        }
-//    }
 
-//    private void revokeGplusAccess() {
-//        if (mGoogleApiClient.isConnected()) {
-//            Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-//            Plus.AccountApi.revokeAccessAndDisconnect(mGoogleApiClient)
-//                    .setResultCallback(new ResultCallback<Status>() {
-//                        @Override
-//                        public void onResult(Status arg0) {
-//                            Log.e(TAG, "User access revoked!");
-//                            mGoogleApiClient.connect();
-//                            updateUI(false);
-//                        }
+//    private class LoadProfileImage extends AsyncTask<String, Void, Bitmap> {
+//        ImageView bmImage;
 //
-//                    });
+//        public LoadProfileImage(ImageView bmImage) {
+//            this.bmImage = bmImage;
+//        }
+//
+//        protected Bitmap doInBackground(String... urls) {
+//            String urldisplay = urls[0];
+//            Bitmap mIcon11 = null;
+//            try {
+//                InputStream in = new java.net.URL(urldisplay).openStream();
+//                mIcon11 = BitmapFactory.decodeStream(in);
+//            } catch (Exception e) {
+//                Log.e("Error", e.getMessage());
+//                e.printStackTrace();
+//            }
+//            return mIcon11;
+//        }
+//
+//        protected void onPostExecute(Bitmap result) {
+//            bmImage.setImageBitmap(result);
 //        }
 //    }
 
-    private class LoadProfileImage extends AsyncTask<String, Void, Bitmap> {
-        ImageView bmImage;
-
-        public LoadProfileImage(ImageView bmImage) {
-            this.bmImage = bmImage;
+    public void CopyDB(InputStream inputStream, OutputStream outputStream)
+            throws IOException {
+        //---copy 1K bytes at a time---
+        byte[] buffer = new byte[1024];
+        int length;
+        while ((length = inputStream.read(buffer)) > 0) {
+            outputStream.write(buffer, 0, length);
         }
-
-        protected Bitmap doInBackground(String... urls) {
-            String urldisplay = urls[0];
-            Bitmap mIcon11 = null;
-            try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return mIcon11;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            bmImage.setImageBitmap(result);
-        }
+        inputStream.close();
+        outputStream.close();
     }
 
 }
