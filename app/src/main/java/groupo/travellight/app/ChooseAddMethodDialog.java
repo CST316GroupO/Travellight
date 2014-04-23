@@ -20,12 +20,12 @@ public class ChooseAddMethodDialog extends DialogFragment implements AddFriendDi
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         currentFragment=this;
-
-        try {
-            callback = (ChooseAddMethodDialogListener) getTargetFragment();
-        } catch (ClassCastException e) {
-            throw new ClassCastException("Calling fragment must implement ChooseAddMethodDialogListener interface");
-        }
+        callback= (ChooseAddMethodDialogListener) getActivity();
+//        try {
+//            callback = (ChooseAddMethodDialogListener) getTargetFragment();
+//        } catch (ClassCastException e) {
+//            throw new ClassCastException("Calling fragment must implement ChooseAddMethodDialogListener interface");
+//        }
     }
 
     @Override

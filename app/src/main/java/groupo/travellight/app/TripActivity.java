@@ -235,10 +235,12 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
         // Set the drawer toggle as the DrawerListener
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         getActionBar().setDisplayHomeAsUpEnabled(true);
-        if (listOfFiles.length <= 1){
-            mDrawerLayout.openDrawer(mDrawerList);
-            showPopUp();
-            Toast.makeText(getApplicationContext(), "Create a new trip.", Toast.LENGTH_LONG).show();
+        if (listOfFiles != null){
+            if (listOfFiles.length <= 1){
+                mDrawerLayout.openDrawer(mDrawerList);
+                showPopUp();
+                Toast.makeText(getApplicationContext(), "Create a new trip.", Toast.LENGTH_LONG).show();
+            }
         }
         String t = "";
         File f = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + "recent.txt");
@@ -336,6 +338,11 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
             writer.println("1398051792000");
             writer.close();
         }
+        Log.d("startyear", Integer.toString(adapter.getStartYear()));
+        if (!Utility.startDates.isEmpty()){
+            String[] separatedTime = Utility.startDates.get(0).split("-");
+        month.set(Integer.parseInt(separatedTime[0]), Integer.parseInt(separatedTime[0])-1, 1);
+        }
         refreshCalendar();
 
     }
@@ -417,7 +424,7 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
     }
     private void showRemove() {
         AlertDialog.Builder helpBuilder = new AlertDialog.Builder(this);
-        helpBuilder.setTitle("Remove trip " + getActionBar().getTitle()+ "?");
+        helpBuilder.setTitle("Remove trip " + getActionBar().getTitle() + "?");
 
 
         //Save button
@@ -547,15 +554,17 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
         super.onResume();
         File folder = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail);
         File[] listOfFiles = folder.listFiles();
-        for (int i = 0; i < listOfFiles.length; i++)
-        {
-
-            if (listOfFiles[i].isDirectory())
+        if (listOfFiles != null){
+            for (int i = 0; i < listOfFiles.length; i++)
             {
-                if (!trips.contains(listOfFiles[i].getName())) {
-                    trips.add(listOfFiles[i].getName());
-                }
 
+                if (listOfFiles[i].isDirectory())
+                {
+                    if (!trips.contains(listOfFiles[i].getName())) {
+                        trips.add(listOfFiles[i].getName());
+                    }
+
+                }
             }
         }
 
@@ -583,8 +592,7 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
                 items.add(Utility.startDates.get(i).toString());
             }
             adapter.setItems(items);
-
-            adapter.notifyDataSetChanged();
+            adapter.notifyDataSetChanged(); 
             //adapter.clickFocus();
         }
     };

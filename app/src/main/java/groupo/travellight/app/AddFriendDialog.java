@@ -39,12 +39,12 @@ public class AddFriendDialog extends DialogFragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        try {
-            callback = (AddFriendDialogListener) getTargetFragment();
-        } catch (ClassCastException e) {
-            throw new ClassCastException("Calling fragment must implement AddFriendDialogListener interface");
-        }
+        callback=(AddFriendDialogListener) getActivity();
+//        try {
+//            callback = (AddFriendDialogListener) getTargetFragment();
+//        } catch (ClassCastException e) {
+//            throw new ClassCastException("Calling fragment must implement AddFriendDialogListener interface");
+//        }
     }
 
     @Override
