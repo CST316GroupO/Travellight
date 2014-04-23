@@ -115,9 +115,9 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
 
-                <data android:mimeType="text/plain" />
-                <data android:pathPattern=".*\\.txt" />
-                <data android:host="*" />
+                <data android:mimeType="*/*" />
+                <!--<data android:pathPattern=".*\\.txt" />-->
+                <!--<data android:host="*" />-->
             </intent-filter>
         </activity>
 
