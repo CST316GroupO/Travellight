@@ -1,19 +1,23 @@
 package groupo.travellight.app;
 
+import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Point;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.method.Touch;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -21,8 +25,10 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -60,6 +66,8 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
     private CharSequence mTitle;
     private BufferedReader bRead;
     private File folder;
+    private String currentTrip;
+    private int tripPosition;
 
     private File[] listOfFiles;
     //Calendar
@@ -75,6 +83,11 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
     ArrayList<String> date;
     ArrayList<String> desc;
     private GridView gridview;
+    private String selectedGridDate;
+    private int currentView = -1;
+    private View currentV;
+    private View previousV;
+    private int previousView = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,7 +110,42 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
 
         handler = new Handler();
         handler.post(calendarUpdater);
+        TextView txtV = (TextView) findViewById(R.id.textView);
 
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int screenWidth = size.x; // int screenWidth = display.getWidth(); on API < 13
+        int screenHeight = size.y; // int screenHeight = display.getHeight(); on API <13
+
+        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(Math.round(screenWidth/7), ViewGroup.LayoutParams.WRAP_CONTENT); // This should set the width and height of the TextView
+        lp.setMargins(0, 40, 0, 0); // This serves as the settings for the left and top position
+
+        txtV.setLayoutParams(lp);
+        txtV = (TextView) findViewById(R.id.textView2);
+        lp = new RelativeLayout.LayoutParams(Math.round(screenWidth/7), ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.setMargins(Math.round(screenWidth/7), 40, 0, 0);
+        txtV.setLayoutParams(lp);
+        txtV = (TextView) findViewById(R.id.textView3);
+        lp = new RelativeLayout.LayoutParams(Math.round(screenWidth/7), ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.setMargins(Math.round(2 * screenWidth / 7), 40, 0, 0);
+        txtV.setLayoutParams(lp);
+        txtV = (TextView) findViewById(R.id.textView4);
+        lp = new RelativeLayout.LayoutParams(Math.round(screenWidth/7), ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.setMargins(Math.round(3 * screenWidth / 7), 40, 0, 0);
+        txtV.setLayoutParams(lp);
+        txtV = (TextView) findViewById(R.id.textView5);
+        lp = new RelativeLayout.LayoutParams(Math.round(screenWidth/7), ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.setMargins(Math.round(4 * screenWidth / 7), 40, 0, 0);
+        txtV.setLayoutParams(lp);
+        txtV = (TextView) findViewById(R.id.textView6);
+        lp = new RelativeLayout.LayoutParams(Math.round(screenWidth/7), ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.setMargins(Math.round(5 * screenWidth / 7), 40, 0, 0);
+        txtV.setLayoutParams(lp);
+        txtV = (TextView) findViewById(R.id.textView7);
+        lp = new RelativeLayout.LayoutParams(Math.round(screenWidth/7), ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.setMargins(Math.round(6 * screenWidth / 7), 40, 0, 0);
+        txtV.setLayoutParams(lp);
         TextView title = (TextView) findViewById(R.id.title);
         title.setText(android.text.format.DateFormat.format("MMMM yyyy", month));
 
@@ -126,14 +174,17 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
         gridview.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
-                // removing the previous view if added
+                previousView = currentView;
+                currentView = position;
+                previousV = currentV;
+                currentV = v;
                 if (((LinearLayout) rLayout).getChildCount() > 0) {
                     ((LinearLayout) rLayout).removeAllViews();
                 }
                 desc = new ArrayList<String>();
                 date = new ArrayList<String>();
-                ((CalendarAdapter) parent.getAdapter()).setSelected(v);
-                String selectedGridDate = CalendarAdapter.dayString
+                adapter.setSelected(v);
+                selectedGridDate = CalendarAdapter.dayString
                         .get(position);
                 String[] separatedTime = selectedGridDate.split("-");
                 String gridvalueString = separatedTime[2].replaceFirst("^0*",
@@ -149,11 +200,6 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
                 }
                 ((CalendarAdapter) parent.getAdapter()).setSelected(v);
 
-                for (int i = 0; i < Utility.startDates.size(); i++) {
-                    if (Utility.startDates.get(i).equals(selectedGridDate)) {
-                        desc.add(Utility.nameOfEvent.get(i));
-                    }
-                }
 
                 if (desc.size() > 0) {
                     for (int i = 0; i < desc.size(); i++) {
@@ -268,7 +314,50 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
 
 
     }
+    public void clickItem(View v,
+                            int position) {
 
+        if (((LinearLayout) rLayout).getChildCount() > 0) {
+            ((LinearLayout) rLayout).removeAllViews();
+        }
+        desc = new ArrayList<String>();
+        date = new ArrayList<String>();
+        adapter.setSelected(v);
+        selectedGridDate = CalendarAdapter.dayString
+                .get(position);
+        String[] separatedTime = selectedGridDate.split("-");
+        String gridvalueString = separatedTime[2].replaceFirst("^0*",
+                "");// taking last part of date. ie; 2 from 2012-12-02.
+        int gridvalue = Integer.parseInt(gridvalueString);
+        // navigate to next or previous month on clicking offdays.
+        if ((gridvalue > 10) && (position < 8)) {
+            setPreviousMonth();
+            refreshCalendar();
+        } else if ((gridvalue < 7) && (position > 28)) {
+            setNextMonth();
+            refreshCalendar();
+        }
+        adapter.setSelected(v);
+
+
+        if (desc.size() > 0) {
+            for (int i = 0; i < desc.size(); i++) {
+                TextView rowTextView = new TextView(TripActivity.this);
+
+                // set some properties of rowTextView or something
+                rowTextView.setText(desc.get(i));
+                rowTextView.setTextColor(Color.BLACK);
+
+                // add the textview to the linearlayout
+                rLayout.addView(rowTextView);
+
+            }
+
+        }
+
+        desc = null;
+
+    }
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -303,7 +392,7 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
 
     /** Swaps fragments in the main content view */
     private void selectItem(int position) throws IOException {
-
+        currentTrip = trips.get(position);
 
         // Highlight the selected item, update the title, and close the drawer
         mDrawerList.setItemChecked(position, true);
@@ -318,32 +407,31 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
         Utility.nameOfEvent.clear();
         Utility.startDates.clear();
         File f = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + trips.get(position).toString() + "/" + "events.txt");
-        Log.d("================trips POS==============",trips.get(position).toString());
+
         if (f.exists()){
             BufferedReader in = new BufferedReader(new FileReader(f));
 
             String x = in.readLine();
-            Utility.nameOfEvent.add(x);
-            if (x == null){
-                Log.d("================NULLL==============","...");
+            while(x != null){
+                if(!Utility.startDates.contains(x)){
+                    Utility.startDates.add(x);
+                }
+                x = in.readLine();
             }
 
-            Log.d("first line","..." + x);
-            Utility.startDates.add(Utility.getDate(Long.parseLong(in.readLine())));
 
         }
-        else{
-            writer = new PrintWriter(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + trips.get(position).toString() + "/" + "events.txt", "UTF-8");
-            writer.println("Biking");
-            writer.println("1398051792000");
-            writer.close();
-        }
-        Log.d("startyear", Integer.toString(adapter.getStartYear()));
-        if (!Utility.startDates.isEmpty()){
+
+
+        if (!Utility.startDates.isEmpty() && tripPosition!= position){
             String[] separatedTime = Utility.startDates.get(0).split("-");
-        month.set(Integer.parseInt(separatedTime[0]), Integer.parseInt(separatedTime[0])-1, 1);
+            Log.d("startyear", Integer.toString(Integer.parseInt(separatedTime[0])));
+            Log.d("startyear1", Integer.toString(Integer.valueOf(separatedTime[0])));
+        month.set(Integer.parseInt(separatedTime[0]), Integer.parseInt(separatedTime[1])-1, 1);
         }
+        tripPosition = position;
         refreshCalendar();
+
 
     }
 
@@ -357,9 +445,35 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
         showPopUp();
         Toast.makeText(this, "Enter trip name.", Toast.LENGTH_LONG).show();
     }
-    public void gotoEvent(MenuItem item){
-        Intent intent = new Intent(this,EventsBag.class);
-        startActivity(intent);
+    public void gotoEvent(MenuItem item) throws FileNotFoundException, UnsupportedEncodingException {
+        //Intent intent = new Intent(this,EventsBag.class);
+        //startActivity(intent);
+        adapter.setV(currentV);
+        File log = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + currentTrip + "/" + "events.txt");
+
+        try{
+            if(!log.exists()){
+
+                log.createNewFile();
+            }
+
+            FileWriter fileWriter = new FileWriter(log, true);
+
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            bufferedWriter.write(selectedGridDate);
+            bufferedWriter.newLine();
+            bufferedWriter.close();
+
+
+        } catch(IOException e) {
+
+        }
+
+        try {
+            selectItem(tripPosition);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     //comment
     public void gotoPacking(MenuItem item){
@@ -500,10 +614,10 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
                 onSearchRequested(); //call search dialog
                 return true;
             case R.id.action_friends:
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
-                ft.replace(R.id.content_frame, new FriendsList());//change add to replace?
-                ft.addToBackStack(null);
-                ft.commit();
+                Intent intent = new Intent(this,FriendsListActivity.class);
+                intent.putExtra("LOGIN_EMAIL", mEmail);
+                intent.putExtra("TRIP_NAME", mTitle);
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -512,6 +626,9 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
 
     }
     protected void setNextMonth() {
+        selectedGridDate = null;
+        currentView = -1;
+        adapter.setV(null);
         if (month.get(GregorianCalendar.MONTH) == month
                 .getActualMaximum(GregorianCalendar.MONTH)) {
             month.set((month.get(GregorianCalendar.YEAR) + 1),
@@ -524,6 +641,9 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
     }
 
     protected void setPreviousMonth() {
+        selectedGridDate = null;
+        currentView = -1;
+        adapter.setV(null);
         if (month.get(GregorianCalendar.MONTH) == month
                 .getActualMinimum(GregorianCalendar.MONTH)) {
             month.set((month.get(GregorianCalendar.YEAR) - 1),
@@ -546,7 +666,6 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
         adapter.refreshDays();
         adapter.notifyDataSetChanged();
         handler.post(calendarUpdater); // generate some calendar items
-
         title.setText(android.text.format.DateFormat.format("MMMM yyyy", month));
     }
     @Override
@@ -577,7 +696,6 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
         @Override
         public void run() {
             items.clear();
-
             // Print dates of the current week
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
             String itemvalue;
@@ -591,8 +709,19 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
                 itemmonth.add(GregorianCalendar.DATE, 1);
                 items.add(Utility.startDates.get(i).toString());
             }
+
+
             adapter.setItems(items);
-            adapter.notifyDataSetChanged(); 
+            if (currentV != null){
+                Log.d("=====One====", event.toString());
+
+            }
+            adapter.notifyDataSetChanged();
+            if (currentV != null){
+                Log.d("=====Two====", event.toString());
+
+            }
+
             //adapter.clickFocus();
         }
     };

@@ -45,6 +45,7 @@ public class CalendarAdapter extends BaseAdapter {
     private View focusView;
     private int startMonth;
     private int startYear;
+    private View setView;
     public CalendarAdapter(Context c, GregorianCalendar monthCalendar) {
 		CalendarAdapter.dayString = new ArrayList<String>();
 		Locale.setDefault(Locale.US);
@@ -129,6 +130,9 @@ public class CalendarAdapter extends BaseAdapter {
             startYear = Integer.parseInt(separatedTime[0]);
 
 		}
+        if (v.equals(setView) && setView!= null){
+            setSelected(v);
+        }
 		dayView.setText(gridvalue);
 
 		// create date string for comparison
@@ -153,6 +157,16 @@ public class CalendarAdapter extends BaseAdapter {
         else
         {
             Log.d("why null", "focus null");
+        }
+    }
+    public void setV(View v){
+        setView = v;
+        if (v!= null){
+        previousV = true;
+        }
+        else{
+            previousV = false;
+            previousView = null;
         }
     }
     public int getStartMonth(){
