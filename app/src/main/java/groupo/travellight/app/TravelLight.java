@@ -2,9 +2,17 @@ package groupo.travellight.app;
 
 import android.app.Application;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-
+import java.io.BufferedOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 /**
  * This acts as a shared object for the entire
  * TravelLight app. It is used to share data in-between
@@ -15,6 +23,7 @@ import java.util.HashMap;
 public class TravelLight extends Application
 {
     private ArrayList<HashMap<String, String>> eventList = new ArrayList<HashMap<String, String>>();
+    private HashMap<String,ArrayList<HashMap<String, String>>> calendarList = new  HashMap<String,ArrayList<HashMap<String, String>>>();
 
     /**
      * Add an event to the current event bag
@@ -44,5 +53,53 @@ public class TravelLight extends Application
     public void setEventList(ArrayList<HashMap<String, String>> list)
     {
         eventList = list;
+    }
+
+    public void addEventListToCalendar(ArrayList<HashMap<String, String>> list, String date)
+    {
+        calendarList.put(date, list);
+    }
+
+    public ArrayList<HashMap<String, String>> GetEventListToCalendar(String date)
+    {
+        return calendarList.get(date);
+    }
+
+    public void saveCalendar(String tripName, String email)
+    {
+        try {
+
+
+            FileOutputStream fos = new FileOutputStream(new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + email + "/" + tripName + "/" + "events_hash.txt"));
+            ObjectOutputStream os = new ObjectOutputStream(fos);
+            os.writeObject(calendarList);
+            os.close();
+        }
+        catch (IOException e)
+        {
+
+        }
+    }
+    public ArrayList<String> getDates()
+{
+    ArrayList<String> dates = new ArrayList<String>();
+    for ( String key : calendarList.keySet() ) {
+        dates.add(key);
+    }
+
+    return dates;
+}
+
+    public void loadCalendar(String tripName, String email) {
+        try {
+            FileInputStream fis = new FileInputStream(new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + email + "/" + tripName + "/" + "events_hash.txt"));
+            ObjectInputStream is = new ObjectInputStream(fis);
+            calendarList = (HashMap<String,ArrayList<HashMap<String, String>>>) is.readObject();
+            is.close();
+        }
+        catch (Exception e)
+        {
+
+        }
     }
 }

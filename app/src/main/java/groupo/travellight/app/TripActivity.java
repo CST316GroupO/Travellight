@@ -95,6 +95,9 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
     private ListView mDrawerList1;
     private CustomAdapter drawerAdapter1;
     private ActionBarDrawerToggle mDrawerToggle1;
+    private Activity thisActivity;
+    ArrayList<HashMap<String, String>> sList = new ArrayList<HashMap<String, String>>();
+    private TravelLight myApp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,12 +106,13 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
         setContentView(R.layout.activity_trip);
         //setContentView(R.layout.activity_trip);
         Locale.setDefault(Locale.US);
+        myApp = (TravelLight) getApplication();
         //drawer 2
-        ArrayList<HashMap<String, String>> sList = new ArrayList<HashMap<String, String>>();
+         sList = new ArrayList<HashMap<String, String>>();
         mDrawerLayout1 = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList1 = (ListView) findViewById(R.id.yelp_left_drawer);
-
-        TravelLight myApp = (TravelLight) getApplication();
+        thisActivity = this;
+        myApp = (TravelLight) getApplication();
         drawerAdapter1 = new CustomAdapter(this, myApp.getEventList());
         if (drawerAdapter1 != null){
         mDrawerList1.setAdapter(drawerAdapter1);
@@ -124,14 +128,14 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
-                getActionBar().setTitle("Results");
+
                 //invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                getActionBar().setTitle("Event Bag");
+
                 //invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
@@ -220,12 +224,26 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
                 currentView = position;
                 previousV = currentV;
                 currentV = v;
+                myApp.loadCalendar(currentTrip, mEmail);
+                selectedGridDate = CalendarAdapter.dayString
+                        .get(position);
+                if (selectedGridDate != null){
+                    if (myApp.GetEventListToCalendar(selectedGridDate) != null){
+                    CustomAdapter drawerAdapter2 = new CustomAdapter(thisActivity, myApp.GetEventListToCalendar(selectedGridDate));
 
+                    rLayout.setAdapter(drawerAdapter2);
+                    }
+                    else{
+                        CustomAdapter drawerAdapter2 = new CustomAdapter(thisActivity, new ArrayList<HashMap<String, String>>());
+                        rLayout.setAdapter(drawerAdapter2);
+                    }
+
+
+                }
                 desc = new ArrayList<String>();
                 date = new ArrayList<String>();
                 adapter.setSelected(v);
-                selectedGridDate = CalendarAdapter.dayString
-                        .get(position);
+
                 String[] separatedTime = selectedGridDate.split("-");
                 String gridvalueString = separatedTime[2].replaceFirst("^0*",
                         "");// taking last part of date. ie; 2 from 2012-12-02.
@@ -312,9 +330,11 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
+                if (mDrawerLayout.isDrawerOpen(mDrawerList)){
                 getActionBar().setTitle(mDrawerTitle);
                 //invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
                 Toast.makeText(getApplicationContext(), "Select or create a trip.", Toast.LENGTH_LONG).show();
+                }
             }
         };
 
@@ -431,7 +451,44 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
         @Override
         public void onItemClick(AdapterView parent, View view, int position, long id) {
 
-            rLayout.addView(drawerAdapter1.getView(position, view, parent));
+            if (selectedGridDate != null){
+
+
+            sList.add(myApp.getEventList().get(position));
+            CustomAdapter drawerAdapter2 = new CustomAdapter(thisActivity, sList);
+            rLayout.setAdapter(drawerAdapter2);
+                adapter.setV(currentV);
+                myApp.addEventListToCalendar(sList, selectedGridDate);
+                myApp.saveCalendar(currentTrip, mEmail);
+                File log = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + currentTrip + "/" + "events.txt");
+
+                try{
+                    if(!log.exists()){
+
+                        log.createNewFile();
+                    }
+
+                    FileWriter fileWriter = new FileWriter(log, true);
+
+                    BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+                    bufferedWriter.write(selectedGridDate);
+                    bufferedWriter.newLine();
+                    bufferedWriter.close();
+
+
+                } catch(IOException e) {
+
+                }
+
+                try {
+                    selectItem(tripPosition);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            else{
+                Toast.makeText(thisActivity, "Select a day to add events to.", Toast.LENGTH_LONG).show();
+            }
 
 
         }
@@ -440,7 +497,7 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
     /** Swaps fragments in the main content view */
     private void selectItem(int position) throws IOException {
         currentTrip = trips.get(position);
-
+        myApp.loadCalendar(currentTrip, mEmail);
         // Highlight the selected item, update the title, and close the drawer
         mDrawerList.setItemChecked(position, true);
         setTitle(trips.get(position));
@@ -451,7 +508,7 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
 
         writer.println(trips.get(position).toString());
         writer.close();
-        Utility.nameOfEvent.clear();
+
         Utility.startDates.clear();
         File f = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + trips.get(position).toString() + "/" + "events.txt");
 
@@ -459,15 +516,13 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
             BufferedReader in = new BufferedReader(new FileReader(f));
 
             String x = in.readLine();
-            while(x != null){
-                if(!Utility.startDates.contains(x)){
-                    Utility.startDates.add(x);
-                }
-                x = in.readLine();
+            if (myApp.getDates() != null){
+            for  (int i = 0; i <myApp.getDates().size();i ++){
+                if (!Utility.startDates.contains(myApp.getDates().get(i))){
+                Utility.startDates.add(myApp.getDates().get(i));
+            }
             }
 
-
-        }
 
 
         if (!Utility.startDates.isEmpty() && tripPosition!= position){
@@ -481,7 +536,8 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
 
 
     }
-
+    }
+    }
     @Override
     public void setTitle(CharSequence title) {
         mTitle = title;
@@ -495,32 +551,13 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
     public void gotoEvent(MenuItem item) throws FileNotFoundException, UnsupportedEncodingException {
         //Intent intent = new Intent(this,EventsBag.class);
         //startActivity(intent);
-        adapter.setV(currentV);
-        File log = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + currentTrip + "/" + "events.txt");
-
-        try{
-            if(!log.exists()){
-
-                log.createNewFile();
-            }
-
-            FileWriter fileWriter = new FileWriter(log, true);
-
-            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-            bufferedWriter.write(selectedGridDate);
-            bufferedWriter.newLine();
-            bufferedWriter.close();
-
-
-        } catch(IOException e) {
-
+        if(mDrawerLayout1.isDrawerOpen(mDrawerList1)){
+            mDrawerLayout1.closeDrawer(mDrawerList1);
+        }
+        else{
+        mDrawerLayout1.openDrawer(mDrawerList1);
         }
 
-        try {
-            selectItem(tripPosition);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
     //comment
     public void gotoPacking(MenuItem item){
