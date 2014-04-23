@@ -73,12 +73,11 @@
             android:layout_alignParentEnd="true"
             android:layout_marginTop="0dp"
             android:layout_marginLeft= "1dp" />
-        <LinearLayout
-            android:id="@+id/text"
+        <ListView
+            android:id="@+id/event"
             android:layout_below="@+id/gridview"
             android:layout_width="match_parent"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
+
             android:layout_height="wrap_content"
             android:orientation="vertical">
             <!-- <TextView
@@ -87,7 +86,7 @@
                 android:layout_height="wrap_content"
                 android:visibility="gone"
                 android:text=""/> -->
-        </LinearLayout>
+        </ListView>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -171,6 +170,15 @@
         android:layout_width="240dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        android:choiceMode="singleChoice"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="1px"
+        android:background="#ffffffff"/>
+
+    <ListView android:id="@+id/yelp_left_drawer"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="right"
         android:choiceMode="singleChoice"
         android:divider="@android:color/darker_gray"
         android:dividerHeight="1px"

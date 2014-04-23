@@ -36,8 +36,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.Locale;
-
+import groupo.travellight.yelp.*;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -55,6 +56,8 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
+
+import groupo.travellight.yelp.CustomAdapter;
 
 public class TripActivity extends ActionBarActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks{
     private ArrayList<String> trips = new ArrayList();
@@ -79,7 +82,7 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
     public ArrayList<String> items; // container to store calendar items which
     // needs showing the event marker
     ArrayList<String> event;
-    LinearLayout rLayout;
+    ListView rLayout;
     ArrayList<String> date;
     ArrayList<String> desc;
     private GridView gridview;
@@ -88,6 +91,10 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
     private View currentV;
     private View previousV;
     private int previousView = -1;
+    private DrawerLayout mDrawerLayout1;
+    private ListView mDrawerList1;
+    private CustomAdapter drawerAdapter1;
+    private ActionBarDrawerToggle mDrawerToggle1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,8 +103,43 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
         setContentView(R.layout.activity_trip);
         //setContentView(R.layout.activity_trip);
         Locale.setDefault(Locale.US);
+        //drawer 2
+        ArrayList<HashMap<String, String>> sList = new ArrayList<HashMap<String, String>>();
+        mDrawerLayout1 = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList1 = (ListView) findViewById(R.id.yelp_left_drawer);
 
-        rLayout = (LinearLayout) findViewById(R.id.text);
+        TravelLight myApp = (TravelLight) getApplication();
+        drawerAdapter1 = new CustomAdapter(this, myApp.getEventList());
+        if (drawerAdapter1 != null){
+        mDrawerList1.setAdapter(drawerAdapter1);
+
+        }
+        mDrawerList1.setOnItemClickListener(new DrawerItemClickListener1());
+        // Set the list's click listener
+        //mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+        mDrawerToggle1 = new ActionBarDrawerToggle(this, mDrawerLayout1,
+                R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
+
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                getActionBar().setTitle("Results");
+                //invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                getActionBar().setTitle("Event Bag");
+                //invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+        };
+
+        // Set the drawer toggle as the DrawerListener
+        mDrawerLayout1.setDrawerListener(mDrawerToggle1);
+        //drawer 2 end
+        rLayout = (ListView) findViewById(R.id.event);
         month = (GregorianCalendar) GregorianCalendar.getInstance();
         itemmonth = (GregorianCalendar) month.clone();
 
@@ -178,9 +220,7 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
                 currentView = position;
                 previousV = currentV;
                 currentV = v;
-                if (((LinearLayout) rLayout).getChildCount() > 0) {
-                    ((LinearLayout) rLayout).removeAllViews();
-                }
+
                 desc = new ArrayList<String>();
                 date = new ArrayList<String>();
                 adapter.setSelected(v);
@@ -317,9 +357,7 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
     public void clickItem(View v,
                             int position) {
 
-        if (((LinearLayout) rLayout).getChildCount() > 0) {
-            ((LinearLayout) rLayout).removeAllViews();
-        }
+
         desc = new ArrayList<String>();
         date = new ArrayList<String>();
         adapter.setSelected(v);
@@ -386,6 +424,15 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+        }
+    }
+    private class DrawerItemClickListener1 implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView parent, View view, int position, long id) {
+
+            rLayout.addView(drawerAdapter1.getView(position, view, parent));
+
 
         }
     }
@@ -689,6 +736,7 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
 
         ArrayAdapter adapter =(ArrayAdapter) mDrawerList.getAdapter();//mDrawerAdapter.notifyDataSetChanged();
         adapter.notifyDataSetChanged();
+        drawerAdapter1.notifyDataSetChanged();
     }
 
     public Runnable calendarUpdater = new Runnable() {
