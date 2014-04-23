@@ -314,10 +314,10 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
         Utility.startDates.clear();
         File f = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + trips.get(position).toString() + "/" + "events.txt");
         if (f.exists()){
-        BufferedReader in = new BufferedReader(new FileReader(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + trips.get(position).toString() + "/" + "events.txt"));
+            BufferedReader in = new BufferedReader(new FileReader(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + trips.get(position).toString() + "/" + "events.txt"));
 
-        Utility.nameOfEvent.add(in.readLine());
-        Utility.startDates.add(Utility.getDate(Long.parseLong(in.readLine())));
+            Utility.nameOfEvent.add(in.readLine());
+            Utility.startDates.add(Utility.getDate(Long.parseLong(in.readLine())));
 
         }
         else{
@@ -356,55 +356,55 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
     }
     public void removeTrip(MenuItem item){
         if (!getActionBar().getTitle().equals("Trips")){
-        showRemove();
-        Toast.makeText(this, "This will permanently remove your trip.", Toast.LENGTH_LONG).show();
+            showRemove();
+            Toast.makeText(this, "This will permanently remove your trip.", Toast.LENGTH_LONG).show();
         }
         else{
             Toast.makeText(this, "You must select a Trip to remove.", Toast.LENGTH_LONG).show();
         }
     }
     private void showPopUp() {
-    AlertDialog.Builder helpBuilder = new AlertDialog.Builder(this);
-    helpBuilder.setTitle("Create Trip");
-    final EditText input = new EditText(this);
-    input.setSingleLine();
-    helpBuilder.setView(input);
-    //Save button
-    helpBuilder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
-        public void onClick(DialogInterface dialog, int which) {
-            File f = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + input.getText().toString());
-            if (!f.exists()){
+        AlertDialog.Builder helpBuilder = new AlertDialog.Builder(this);
+        helpBuilder.setTitle("Create Trip");
+        final EditText input = new EditText(this);
+        input.setSingleLine();
+        helpBuilder.setView(input);
+        //Save button
+        helpBuilder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                File f = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + input.getText().toString());
+                if (!f.exists()){
 
-            f.mkdir();
-                trips.add(input.getText().toString());
+                    f.mkdir();
+                    trips.add(input.getText().toString());
 
-                try {
-                    selectItem(trips.size() - 1);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    try {
+                        selectItem(trips.size() - 1);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    mDrawerList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.popup_layout, trips));
+
+
                 }
-
-                mDrawerList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.popup_layout, trips));
-
-
+                else{
+                    Toast.makeText(getApplicationContext(), "Trip name exists! Try again.", Toast.LENGTH_LONG).show();
+                }
             }
-            else{
-                Toast.makeText(getApplicationContext(), "Trip name exists! Try again.", Toast.LENGTH_LONG).show();
+        });
+        //Cancel button
+        helpBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Do nothing, just close the dialog box
             }
-        }
-    });
-    //Cancel button
-    helpBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
-            // Do nothing, just close the dialog box
-        }
-    });
-    // Remember, create doesn't show the dialog
-    AlertDialog helpDialog = helpBuilder.create();
-    helpDialog.show();
+        });
+        // Remember, create doesn't show the dialog
+        AlertDialog helpDialog = helpBuilder.create();
+        helpDialog.show();
 
-}
+    }
     private void showRemove() {
         AlertDialog.Builder helpBuilder = new AlertDialog.Builder(this);
         helpBuilder.setTitle("Remove trip " + getActionBar().getTitle()+ "?");
@@ -433,10 +433,10 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
                     writer.println("Trips");
                     writer.close();
 
-                        Utility.nameOfEvent.clear();
-                        Utility.startDates.clear();
+                    Utility.nameOfEvent.clear();
+                    Utility.startDates.clear();
 
-                        refreshCalendar();
+                    refreshCalendar();
                     mDrawerList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.popup_layout, trips));
                     mDrawerLayout.openDrawer(mDrawerList);
 
@@ -461,7 +461,7 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        
+
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.trip, menu);
         return true;
@@ -522,7 +522,7 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
         Toast.makeText(this, string, Toast.LENGTH_SHORT).show();
 
     }
-     public void refreshCalendar() {
+    public void refreshCalendar() {
         TextView title = (TextView) findViewById(R.id.title);
 
         adapter.refreshDays();
