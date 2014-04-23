@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.util.StringTokenizer;
 
 
@@ -52,6 +53,7 @@ public class OpenCalendarFile extends ActionBarActivity {
             //using contentResolver to get file contents and making a local cache file out of it
             ContentResolver contentResolver = getContentResolver();
             InputStream inputStream= contentResolver.openInputStream(incomingUri);
+            ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
 
             File newFile = new File(getCacheDir()+File.separator+"ReceivedFile.txt");
             FileOutputStream fileOutputStream = new FileOutputStream(newFile);
