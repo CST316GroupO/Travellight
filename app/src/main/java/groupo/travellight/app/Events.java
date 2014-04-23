@@ -11,15 +11,22 @@ package groupo.travellight.app;
  */
 public class Events {
     private String name;
+    private float rating;
 
-    public Events(String name)
+    public Events(String name, float rating)
     {
         super();
         this.name = name;
+        this.rating = rating;
     }
 
     public String getName()
     {
         return name;
+    }
+
+    public  float getRating()
+    {
+        return rating;
     }
 }

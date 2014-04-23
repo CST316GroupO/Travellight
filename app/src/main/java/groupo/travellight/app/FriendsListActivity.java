@@ -88,13 +88,6 @@ public class FriendsListActivity extends ListActivity implements ChooseAddMethod
         saveListToFile(listOfFriends);
     }
 
-    //TODO: PLACE ADD FRIEND BUTTON IN ACTOIN BAR
-//    @Override
-//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
-//        inflater.inflate(R.menu.friends_options, menu);
-//        inflateer=inflater;
-//    }
-
     @Override
     public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo){
         super.onCreateContextMenu(menu,view,menuInfo);
@@ -195,13 +188,18 @@ public class FriendsListActivity extends ListActivity implements ChooseAddMethod
         String currentEmail =listOfFriends.get(position).getEmail();
 
         //this file is temporary, it only contains the current selected trip's name
-        shareFileName=tripName+".txt";
+        shareFileName=tripName+".trvl";
         File shareFile = new File(getFilesDir(), userEmail+File.separator+shareFileName);
 
-        try{  //TODO: make file contain actual calendar info
+        try{  //TODO: make file contain actual calendar info or send such a fle
             FileOutputStream fos = new FileOutputStream (shareFile);
-            fos.write((shareFileName+"$ Hello Friend, i'm going on a trip!!").getBytes());
+            //added in: write an object instead of words
+            ObjectOutputStream ous=new ObjectOutputStream(fos);
+            Friend testFriend= new Friend(tripName, "BrandonEmail@gmail.com");
+            ous.writeObject(testFriend);
+            //fos.write((shareFileName+"$ Hello Friend, i'm going on a trip!!").getBytes());
             fos.close();
+            ous.close();
         }
         catch(FileNotFoundException e){e.printStackTrace();}
         catch(IOException ioe){ioe.printStackTrace();}
