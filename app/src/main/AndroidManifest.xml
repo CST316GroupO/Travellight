@@ -100,5 +100,25 @@
             <meta-data android:name="android.app.default_searchable"
                 android:value=".YelpResultsActivity" />
         </activity>
+        <activity
+            android:name="groupo.travellight.app.OpenCalendarFile"
+            android:label="Travellight Open" >
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+
+                <data android:mimeType="text/plain" />
+                <data android:pathPattern=".*\\.txt" />
+                <data android:host="*" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="groupo.travellight.app.FriendsListActivity"
+            android:label="Friends List">
+        </activity>
     </application>
 </manifest>
