@@ -94,7 +94,7 @@ public class PhotoGallery extends Activity {
         @Override
         public View getView(int position, View view, ViewGroup viewGroup) {
             ImageView imageView = new ImageView(context);
-            imageView.setLayoutParams(new Gallery.LayoutParams(160, 100));
+            imageView.setLayoutParams(new Gallery.LayoutParams(150, 100));
             imageView.setPadding(10, 10, 10, 10);
             imageView.setImageResource(imageIds[position]);
             return imageView;
