@@ -235,10 +235,12 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
         // Set the drawer toggle as the DrawerListener
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         getActionBar().setDisplayHomeAsUpEnabled(true);
-        if (listOfFiles.length <= 1){
-            mDrawerLayout.openDrawer(mDrawerList);
-            showPopUp();
-            Toast.makeText(getApplicationContext(), "Create a new trip.", Toast.LENGTH_LONG).show();
+        if (listOfFiles != null){
+            if (listOfFiles.length <= 1){
+                mDrawerLayout.openDrawer(mDrawerList);
+                showPopUp();
+                Toast.makeText(getApplicationContext(), "Create a new trip.", Toast.LENGTH_LONG).show();
+            }
         }
         String t = "";
         File f = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + "recent.txt");
@@ -336,6 +338,8 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
             writer.println("1398051792000");
             writer.close();
         }
+        Log.d("startyear", Integer.toString(adapter.getStartYear()));
+        month.set(adapter.getStartYear(), adapter.getStartMonth(), 1);
         refreshCalendar();
 
     }
@@ -417,7 +421,7 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
     }
     private void showRemove() {
         AlertDialog.Builder helpBuilder = new AlertDialog.Builder(this);
-        helpBuilder.setTitle("Remove trip " + getActionBar().getTitle()+ "?");
+        helpBuilder.setTitle("Remove trip " + getActionBar().getTitle() + "?");
 
 
         //Save button
@@ -583,8 +587,7 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
                 items.add(Utility.startDates.get(i).toString());
             }
             adapter.setItems(items);
-
-            adapter.notifyDataSetChanged();
+            adapter.notifyDataSetChanged(); 
             //adapter.clickFocus();
         }
     };
