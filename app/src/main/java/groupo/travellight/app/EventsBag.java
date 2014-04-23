@@ -19,6 +19,8 @@ import java.util.List;
 /*
     Bag of events listed to user
  */
+//Added Back in Due to Tommy Deleting on Masters - Joe
+
 public class EventsBag extends ActionBarActivity {
     private List<Events> myEvents = new ArrayList<Events>();
 

@@ -38,17 +38,27 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
         setContentView(R.layout.activity_trip);
         Intent in = getIntent();
         Bundle b = in.getExtras();
-        String email = b.getString("LOGIN_EMAIL");
+        String email = "";
+        if (b == null){
+            email = "testEmail@test.com";
+        }
+        else{
+            email = b.getString("LOGIN_EMAIL");
+        }
         mEmail = email;
+        Log.d("before", "1");
         File folder = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + email);
+        Log.d("after", folder.toString());
         File[] listOfFiles = folder.listFiles();
-        for (int i = 0; i < listOfFiles.length; i++)
-        {
-
-            if (listOfFiles[i].isDirectory())
+        if (listOfFiles != null){
+            for (int i = 0; i < listOfFiles.length; i++)
             {
-                trips.add(listOfFiles[i].getName());
 
+                if (listOfFiles[i].isDirectory())
+                {
+                    trips.add(listOfFiles[i].getName());
+
+                }
             }
         }
 
@@ -145,6 +155,11 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
     //comment
     public void gotoPacking(MenuItem item){
         Intent intent = new Intent(this,PackingListActivity.class);
+        //Pass the Email Field
+        intent.putExtra("LOGIN_EMAIL", mEmail);
+        //Pass the Trip Field
+        intent.putExtra("TRIP_NAME", mTitle);
+
         startActivity(intent);
     }
     public void removeTrip(MenuItem item){
