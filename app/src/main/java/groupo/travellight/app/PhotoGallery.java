@@ -18,12 +18,14 @@ import android.widget.Toast;
  * Created by Tommy Pham on 4/11/2014.
  */
 public class PhotoGallery extends Activity {
-    //testing if the gallery will show images will be removed later.
+    Gallery gallery;
+    ImageView imageView;
+    //testing if the gallery will show images, will be removed later.
     public Integer[] imageIds = {
-            R.drawable.dot,
-            R.drawable.appicon,
-            R.drawable.arrow_right,
-            R.drawable.arrow_left
+            R.drawable.ic_launcher,
+            R.drawable.images,
+            R.drawable.badge,
+            R.drawable.index
     };
 
     @Override
@@ -31,10 +33,10 @@ public class PhotoGallery extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_gallery);
 
-        Gallery gallery = (Gallery) findViewById(R.id.gallery_layout);
+        gallery = (Gallery) findViewById(R.id.gallery_layout);
         gallery.setAdapter(new ImageAdapter(this));
 
-        final ImageView imageView = (ImageView) findViewById(R.id.gallery_display);
+        imageView = (ImageView) findViewById(R.id.gallery_display);
 
         gallery.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -45,13 +47,13 @@ public class PhotoGallery extends Activity {
         });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    //@Override
+    //public boolean onCreateOptionsMenu(Menu menu) {
 
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.trip, menu);
-        return true;
-    }
+        //getMenuInflater().inflate(R.menu.trip, menu);
+        //return true;
+    //}
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -92,6 +94,8 @@ public class PhotoGallery extends Activity {
         @Override
         public View getView(int position, View view, ViewGroup viewGroup) {
             ImageView imageView = new ImageView(context);
+            imageView.setLayoutParams(new Gallery.LayoutParams(160, 100));
+            imageView.setPadding(10, 10, 10, 10);
             imageView.setImageResource(imageIds[position]);
             return imageView;
         }
