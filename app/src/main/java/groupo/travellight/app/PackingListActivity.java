@@ -9,6 +9,9 @@ import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -37,7 +40,7 @@ import java.util.List;
  * This Activity handles the Packing List Screen, including
  * viewing the list as well as modifying the elements
  * contained in the list.
- * TODO: Save List, 
+ * TODO: Save List,
  *          -Currently Working on This on a Seprate Project
  */
 public class PackingListActivity extends ActionBarActivity {
@@ -46,7 +49,7 @@ public class PackingListActivity extends ActionBarActivity {
     Button saveListButton;
     EditText itemText;
     ImageView imgViewPackingImage;
-    String statusText, filename;
+    String statusText, filename, email, title;
     List<PackingItem> PackingItems = new ArrayList();
     ListView packingListView;
 
@@ -64,9 +67,8 @@ public class PackingListActivity extends ActionBarActivity {
         //PackingItems = readPackingListFromFile();
 
         //Fetches the Email Field From Previous Activity
-        Intent in = getIntent();
-        Bundle b = in.getExtras();
-        String email;
+        final Intent in = getIntent();
+        final Bundle b = in.getExtras();
         CharSequence title;
         if (b == null){
             email = "Test Email";
@@ -76,6 +78,8 @@ public class PackingListActivity extends ActionBarActivity {
             email = b.getString("LOGIN_EMAIL");
             title = b.getCharSequence("TRIP_NAME");
         }
+
+        setTitle( email  + "'s Packing List");
 
         //Email Loaded
         userTrip = (TextView) findViewById(R.id.textViewUserTrip);
@@ -89,15 +93,15 @@ public class PackingListActivity extends ActionBarActivity {
 
 
         //Set up the Add Item and Packing List Tabs Respectively
-        TabHost tabHost = (TabHost) findViewById(R.id.tabHost);
+        final TabHost tabHost = (TabHost) findViewById(R.id.tabHost);
         tabHost.setup();
-        TabHost.TabSpec tabSpec = tabHost.newTabSpec("Add Item");
-        tabSpec.setContent(R.id.tabAdd);
-        tabSpec.setIndicator("Add Item");
-        tabHost.addTab(tabSpec);
-        tabSpec = tabHost.newTabSpec("packList");
+        TabHost.TabSpec tabSpec = tabHost.newTabSpec("Packing List");
         tabSpec.setContent(R.id.tabPackList);
         tabSpec.setIndicator("Packing List");
+        tabHost.addTab(tabSpec);
+        tabSpec = tabHost.newTabSpec("Add Item");
+        tabSpec.setContent(R.id.tabAdd);
+        tabSpec.setIndicator("Add Item");
         tabHost.addTab(tabSpec);
 
         //Loading default items
@@ -163,9 +167,31 @@ public class PackingListActivity extends ActionBarActivity {
 
     }
 
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.packing_context_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+
+        switch (item.getItemId()){
+            case R.id.action_calendar: {
+                final Intent intent = new Intent(this, TripActivity.class);
+                intent.putExtra("LOGIN_EMAIL", email);
+                intent.putExtra("TRIP_NAME", title);
+                startActivity(intent);
+            }
+            default:
+                break;
+        }
+        return true;
+    }
+
+
     //Remove Item Derived From Tommy's checkForRemove Method
     private void callRemove(){
-        ListView list = (ListView) findViewById(R.id.packingListView);
+        final ListView list = (ListView) findViewById(R.id.packingListView);
         final PackingListAdapter adapter = new PackingListAdapter();
         list.setAdapter(adapter);
 
@@ -175,7 +201,7 @@ public class PackingListActivity extends ActionBarActivity {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, final int position, long l)
             {
-                AlertDialog.Builder adb = new AlertDialog.Builder(PackingListActivity.this);
+                final AlertDialog.Builder adb = new AlertDialog.Builder(PackingListActivity.this);
                 adb.setTitle("Are you sure you want to delete the item: " + PackingItems.get(position).getName() + "?");
 
                 adb.setNegativeButton("No", new DialogInterface.OnClickListener()
@@ -206,7 +232,7 @@ public class PackingListActivity extends ActionBarActivity {
         list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, final int position, long l) {
-                AlertDialog.Builder adb = new AlertDialog.Builder(PackingListActivity.this);
+                final AlertDialog.Builder adb = new AlertDialog.Builder(PackingListActivity.this);
                 adb.setTitle("Are you sure you want to delete the item: " + PackingItems.get(position).getName() + "?");
 
                 adb.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -235,7 +261,7 @@ public class PackingListActivity extends ActionBarActivity {
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, final int position, long l) {
-                AlertDialog.Builder adb = new AlertDialog.Builder(PackingListActivity.this);
+                final AlertDialog.Builder adb = new AlertDialog.Builder(PackingListActivity.this);
                 adb.setTitle("Are you sure you want to set the item: " + PackingItems.get(position).getName() + " to Packed?");
 
                 adb.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -307,8 +333,8 @@ public class PackingListActivity extends ActionBarActivity {
 
     //Called to add new packing list item to the list
     //See: PackingListAdapter
-    private void populateList() {
-        ArrayAdapter<PackingItem> adapter = new PackingListAdapter();
+    public void populateList() {
+        final ArrayAdapter<PackingItem> adapter = new PackingListAdapter();
         packingListView.setAdapter(adapter);
     }
 
@@ -331,12 +357,11 @@ public class PackingListActivity extends ActionBarActivity {
     }
 
 
-
     /**
      * PackingListAdapter
      * Custom Adapter That Implements the Unique List View Element for the Packing List
      */
-    private class PackingListAdapter extends ArrayAdapter<PackingItem> {
+    public class PackingListAdapter extends ArrayAdapter<PackingItem> {
 
         public PackingListAdapter() {
             super (PackingListActivity.this, R.layout.listview_packingitem, PackingItems);
@@ -348,12 +373,12 @@ public class PackingListActivity extends ActionBarActivity {
             if (view == null)
                 view = getLayoutInflater().inflate(R.layout.listview_packingitem, parent, false);
 
-            PackingItem currentItem = PackingItems.get(position);
+            final PackingItem currentItem = PackingItems.get(position);
 
-            TextView name = (TextView) view.findViewById(R.id.packingItemName);
+            final TextView name = (TextView) view.findViewById(R.id.packingItemName);
             name.setText(currentItem.getName());
 
-            TextView status = (TextView) view.findViewById(R.id.packingItemStatus);
+            final TextView status = (TextView) view.findViewById(R.id.packingItemStatus);
             status.setText(currentItem.getStatus());
 
             return view;
