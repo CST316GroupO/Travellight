@@ -73,20 +73,25 @@
             android:layout_alignParentEnd="true"
             android:layout_marginTop="0dp"
             android:layout_marginLeft= "1dp" />
-        <ListView
-            android:id="@+id/event"
-            android:layout_below="@+id/gridview"
-            android:layout_width="match_parent"
-
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <!-- <TextView
-                android:id="@+id/tvView"
+        <LinearLayout
+            android:id="@+id/content_frame1"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_below="@+id/gridview">
+            <ListView
+                android:id="@+id/event"
+                android:layout_below="@+id/gridview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:text=""/> -->
-        </ListView>
+                android:orientation="vertical">
+                <!-- <TextView
+                    android:id="@+id/tvView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:text=""/> -->
+            </ListView>
+        </LinearLayout>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -184,4 +189,3 @@
         android:dividerHeight="1px"
         android:background="#ffffffff"/>
 </android.support.v4.widget.DrawerLayout>
-
