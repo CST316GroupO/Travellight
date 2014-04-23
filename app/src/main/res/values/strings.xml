@@ -1,11 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- Calendar Strings -->
+
 
     <!-- App General Strings -->
     <string name="app_name">Travellight</string>
 
     <!-- Yelp Activity Strings -->
     <string name="title_activity_yelp_search"></string>
+    <string name="menu_yelp_search">Search</string>
 
     <!-- Searchable Activity Strings -->
     <string name="search_hint">Search Activities</string>

@@ -5,6 +5,9 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
+
 
     <application
         android:allowBackup="true"
@@ -76,6 +79,9 @@
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
 
+            <!-- enable the search widget to send searches to YelpResultsActivity -->
+            <meta-data android:name="android.app.default_searchable"
+                android:value=".YelpResultsActivity" />
         </activity>
         <activity
             android:name="groupo.travellight.app.PackingListActivity"
@@ -94,6 +100,4 @@
                 android:value=".YelpResultsActivity" />
         </activity>
     </application>
-
-
 </manifest>
