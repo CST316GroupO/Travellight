@@ -1,14 +1,24 @@
 package groupo.travellight.app;
 
+import android.app.Activity;
 import android.app.ListActivity;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.widget.ArrayAdapter;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.Toast;
 
 import org.json.JSONException;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import groupo.travellight.yelp.CustomAdapter;
 import groupo.travellight.yelp.JSONResponse;
 import groupo.travellight.yelp.Yelp;
 
@@ -17,44 +27,113 @@ import groupo.travellight.yelp.Yelp;
  * and displays results in a listview
  * @author Brant Unger
  * @version 0.3
- *
  */
 public class YelpResultsActivity extends ListActivity
 {
     private JSONResponse jsonResponse = new JSONResponse();
 
+    //  Constants for custom data adapter keys
+    public static final String KEY_NAME = "KEY_NAME";
+    public static final String KEY_DESCRIPTION = "KEY_DESCRIPTION";
+    public static final String KEY_RATINGURL = "KEY_RATINGURL";
+    public static final String KEY_RATINGINT = "KEY_RATINGINT";
+    public static final String KEY_THUMBURL = "KEY_THUMBURL";
+
+    CustomAdapter adapter;
+    ArrayList<HashMap<String, String>> sList = new ArrayList<HashMap<String, String>>();
+
+    // Callback when options menu needs to be created
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.yelp_results, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+
+        switch (item.getItemId())
+        {
+            case R.id.action_filter:
+                // call detail activity for clicked entry
+                Toast.makeText(getApplicationContext(), "Added to event bag",
+                        Toast.LENGTH_LONG).show();
+                return true;
+            case R.id.action_search:
+                onSearchRequested(); //call search dialog
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    // Callback on creation of results activity
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        setTitle("Results"); //set the actionbar title
         handleIntent(getIntent());
     }
 
+    // Callback detected from activity thread
     public void onNewIntent(Intent intent)
     {
         setIntent(intent);
         handleIntent(intent);
     }
 
-    /*public void onListItemClick(ListView l, View v, int position, long id) {
-        // call detail activity for clicked entry
-    }*/
-
     // Callback detected from the search dialog
     // call the search logic
     private void handleIntent(Intent intent)
     {
+        if (adapter != null)
+        {
+            sList.clear();
+            finish();
+            startActivity(intent);
+        }
+
+        // If it was the action search intent search yelp
         if (Intent.ACTION_SEARCH.equals(intent.getAction()))
         {
             String query = intent.getStringExtra(SearchManager.QUERY);
-            new SearchYelp().execute(query);
+            new SearchYelp().execute(query); //execute new thread and call the query
         }
     }
+
+    /**
+     * Post the results of the SearchYelp thread
+     */
     private void postResults()
     {
-        String[] values = jsonResponse.getBundleKeys().toArray(new String[0]);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, values);
-        setListAdapter(adapter);
+        // For every item in the JSON bundle
+        // add details from JSON string to a hashmap
+        for (int i = 0; i < jsonResponse.getBundleSize(); i++)
+        {
+            HashMap<String, String> map = new HashMap<String, String>();
+
+            // Yelp result strings, post parsed
+            map.put(KEY_NAME, jsonResponse.getBusinessName(i));
+            map.put(KEY_DESCRIPTION, jsonResponse.getSnippet(i));
+            map.put(KEY_RATINGURL, jsonResponse.getRatingURL(i));
+            map.put(KEY_THUMBURL, jsonResponse.getThumbURL(i));
+            map.put(KEY_RATINGINT, jsonResponse.getRating(i));
+
+            sList.add(map); //add the hashmap to the list
+        }
+
+        adapter = new CustomAdapter(this, sList); //send the details to the data adapter
+        setListAdapter(adapter); //set the adapter for this activity as the custom adapter
+    }
+
+    public void onListItemClick(ListView l, View v, int position, long id)
+    {
+        // call detail activity for clicked entry
+        Toast.makeText(getApplicationContext(), "Added to event bag",
+                Toast.LENGTH_LONG).show();
     }
 
     /**
@@ -67,15 +146,20 @@ public class YelpResultsActivity extends ListActivity
     {
         String stringJSON;
 
+        /**
+         * Functionality called in a seperate thread
+         * @param query
+         * @return String JSON formatted response
+         */
         protected String doInBackground(String... query)
         {
             try
             {
                 stringJSON = new Yelp().search(query[0], "Mesa, AZ");
                 jsonResponse.setResponse(stringJSON);
-                jsonResponse.parseBusiness();
+                jsonResponse.parseBusiness(); //parse JSON data
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 System.out.println(e.getMessage());
             }
@@ -83,10 +167,13 @@ public class YelpResultsActivity extends ListActivity
             return stringJSON;
         }
 
+        /**
+         * Post the results of the query
+         * @param query Search parameter called from above
+         */
         protected void onPostExecute(String query)
         {
             postResults();
         }
     }
-
 }

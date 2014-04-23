@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="#ff686a6e"
+    android:layout_width="match_parent"
+    android:layout_height="fill_parent">
+    <CheckBox
+        android:id="@+id/contact_checkbox"
+        android:layout_width="50dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignBottom="@+id/contact_email_address"
+        android:layout_height="40dp"
+        android:focusable="false"
+        android:clickable="false" />
+    <TextView
+        android:id="@+id/contact_display_name"
+        android:textSize="25dp"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:layout_toLeftOf="@+id/contact_checkbox"
+        android:hint="Display Name goes here"
+        android:layout_width="fill_parent"
+        android:layout_height="60dp"
+        android:paddingLeft="20dp"
+        />
+    <TextView
+        android:id="@+id/contact_email_address"
+        android:textSize="20dp"
+        android:layout_below="@+id/contact_display_name"
+        android:hint="Email goes here"
+        android:paddingLeft="20dp"
+        android:layout_width="match_parent"
+        android:layout_toLeftOf="@+id/contact_checkbox"
+        android:layout_height="60dp" />
+
+</RelativeLayout>
