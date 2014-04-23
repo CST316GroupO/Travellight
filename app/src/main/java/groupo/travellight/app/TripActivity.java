@@ -95,6 +95,7 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
     private ListView mDrawerList1;
     private CustomAdapter drawerAdapter1;
     private ActionBarDrawerToggle mDrawerToggle1;
+    private Activity thisActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,7 +108,7 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
         ArrayList<HashMap<String, String>> sList = new ArrayList<HashMap<String, String>>();
         mDrawerLayout1 = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList1 = (ListView) findViewById(R.id.yelp_left_drawer);
-
+        thisActivity = this;
         TravelLight myApp = (TravelLight) getApplication();
         drawerAdapter1 = new CustomAdapter(this, myApp.getEventList());
         if (drawerAdapter1 != null){
@@ -431,9 +432,12 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
         @Override
         public void onItemClick(AdapterView parent, View view, int position, long id) {
 
-            rLayout.addView(drawerAdapter1.getView(position, view, parent));
+            ArrayList<HashMap<String, String>> sList = new ArrayList<HashMap<String, String>>();
+            TravelLight myApp = (TravelLight) getApplication();
 
-
+            sList.add(myApp.getEventList().get(position));
+            CustomAdapter drawerAdapter2 = new CustomAdapter(thisActivity, sList);
+            rLayout.setAdapter(drawerAdapter2);
         }
     }
 
