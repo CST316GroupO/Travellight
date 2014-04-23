@@ -7,10 +7,11 @@
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
     <uses-permission android:name="android.permission.READ_CALENDAR" />
     <uses-permission android:name="android.permission.WRITE_CALENDAR" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
-
     <application
+        android:name="TravelLight"
         android:allowBackup="true"
         android:icon="@drawable/travellight"
         android:label="@string/app_name"
@@ -84,6 +85,9 @@
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
 
+            <!-- enable the search widget to send searches to YelpResultsActivity -->
+            <meta-data android:name="android.app.default_searchable"
+                android:value=".YelpResultsActivity" />
         </activity>
         <activity
             android:name="groupo.travellight.app.PackingListActivity"
@@ -101,7 +105,25 @@
             <meta-data android:name="android.app.default_searchable"
                 android:value=".YelpResultsActivity" />
         </activity>
+        <activity
+            android:name="groupo.travellight.app.OpenCalendarFile"
+            android:label="Travellight Open" >
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+
+                <data android:mimeType="text/plain" />
+                <data android:pathPattern=".*\\.txt" />
+                <data android:host="*" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="groupo.travellight.app.FriendsListActivity"
+            android:label="Friends List">
+        </activity>
     </application>
-
-
 </manifest>

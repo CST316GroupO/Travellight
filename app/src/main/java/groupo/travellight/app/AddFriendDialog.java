@@ -39,12 +39,12 @@ public class AddFriendDialog extends DialogFragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        try {
-            callback = (AddFriendDialogListener) getTargetFragment();
-        } catch (ClassCastException e) {
-            throw new ClassCastException("Calling fragment must implement AddFriendDialogListener interface");
-        }
+        callback=(AddFriendDialogListener) getActivity();
+//        try {
+//            callback = (AddFriendDialogListener) getTargetFragment();
+//        } catch (ClassCastException e) {
+//            throw new ClassCastException("Calling fragment must implement AddFriendDialogListener interface");
+//        }
     }
 
     @Override
@@ -110,7 +110,7 @@ public class AddFriendDialog extends DialogFragment{
     @Override
     public void onDismiss(DialogInterface dialog){
         super.onDismiss(dialog);
-        InputMethodManager imm =(InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm =(InputMethodManager) getActivity().getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(et.getWindowToken(),0);
     }
 
