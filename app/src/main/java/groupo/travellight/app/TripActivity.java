@@ -322,8 +322,9 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
+                if (mDrawerLayout.isDrawerOpen(mDrawerList)){
                 getActionBar().setTitle(mTitle);
-
+                }
                 //invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
@@ -587,6 +588,8 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
         //Save button
         helpBuilder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
+
+
                 File f = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + input.getText().toString());
                 if (!f.exists()){
 
@@ -599,13 +602,26 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
                         e.printStackTrace();
                     }
 
+
                     mDrawerList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.popup_layout, trips));
-
-
                 }
+
+
+
                 else{
                     Toast.makeText(getApplicationContext(), "Trip name exists! Try again.", Toast.LENGTH_LONG).show();
                 }
+            f = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + input.getText().toString() + "/" + "events_hash.txt");
+            PrintWriter writer = null;
+            try {
+                writer = new PrintWriter(f);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            if(writer != null){
+                writer.println();
+                writer.close();
+            }
             }
         });
         //Cancel button
