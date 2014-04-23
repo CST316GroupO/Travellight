@@ -130,7 +130,7 @@ public class PhotoGallery extends Activity {
                 int imageID = cursor.getInt(columnIndex);
                 //set the content of the image based on the provided URI
                 imgView.setImageURI(Uri.withAppendedPath(MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI, "" + imageID));
-                imgView.setLayoutParams(new Gallery.LayoutParams(150, 100));
+                imgView.setLayoutParams(new Gallery.LayoutParams(400, 400));
                 imgView.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 imgView.setPadding(10, 10, 10, 10);
             }
