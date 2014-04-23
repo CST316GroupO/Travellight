@@ -40,7 +40,6 @@ public class YelpResultsActivity extends ListActivity
     public static final String KEY_THUMBURL = "KEY_THUMBURL";
 
     CustomAdapter adapter;
-
     ArrayList<HashMap<String, String>> sList = new ArrayList<HashMap<String, String>>();
 
     // Callback when options menu needs to be created
@@ -90,17 +89,16 @@ public class YelpResultsActivity extends ListActivity
     // call the search logic
     private void handleIntent(Intent intent)
     {
+        if (adapter != null)
+        {
+            sList.clear();
+            finish();
+            startActivity(intent);
+        }
+
         // If it was the action search intent search yelp
         if (Intent.ACTION_SEARCH.equals(intent.getAction()))
         {
-            if (adapter!= null)
-            {
-                sList.clear();
-                System.out.println(sList.size());
-
-                adapter.notifyDataSetChanged();
-            }
-
             String query = intent.getStringExtra(SearchManager.QUERY);
             new SearchYelp().execute(query); //execute new thread and call the query
         }
