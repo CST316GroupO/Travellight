@@ -9,6 +9,7 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.method.Touch;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -73,6 +74,7 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
     LinearLayout rLayout;
     ArrayList<String> date;
     ArrayList<String> desc;
+    private GridView gridview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +92,7 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
 
         adapter = new CalendarAdapter(this, month);
 
-        GridView gridview = (GridView) findViewById(R.id.gridview);
+        gridview = (GridView) findViewById(R.id.gridview);
         gridview.setAdapter(adapter);
 
         handler = new Handler();
@@ -252,6 +254,7 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
                 e.printStackTrace();
             }
             if (!t.equals("Trips")){
+                Log.d("================trip name==============","..." + t);
                 try {
                     selectItem(trips.indexOf(t));
                 } catch (IOException e) {
@@ -313,11 +316,18 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
         Utility.nameOfEvent.clear();
         Utility.startDates.clear();
         File f = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + trips.get(position).toString() + "/" + "events.txt");
+        Log.d("================trips POS==============",trips.get(position).toString());
         if (f.exists()){
-        BufferedReader in = new BufferedReader(new FileReader(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + trips.get(position).toString() + "/" + "events.txt"));
+            BufferedReader in = new BufferedReader(new FileReader(f));
 
-        Utility.nameOfEvent.add(in.readLine());
-        Utility.startDates.add(Utility.getDate(Long.parseLong(in.readLine())));
+            String x = in.readLine();
+            Utility.nameOfEvent.add(x);
+            if (x == null){
+                Log.d("================NULLL==============","...");
+            }
+
+            Log.d("first line","..." + x);
+            Utility.startDates.add(Utility.getDate(Long.parseLong(in.readLine())));
 
         }
         else{
@@ -347,59 +357,64 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
     //comment
     public void gotoPacking(MenuItem item){
         Intent intent = new Intent(this,PackingListActivity.class);
+        //Pass the Email Field
+        intent.putExtra("LOGIN_EMAIL", mEmail);
+        //Pass the Trip Field
+        intent.putExtra("TRIP_NAME", mTitle);
+
         startActivity(intent);
     }
     public void removeTrip(MenuItem item){
         if (!getActionBar().getTitle().equals("Trips")){
-        showRemove();
-        Toast.makeText(this, "This will permanently remove your trip.", Toast.LENGTH_LONG).show();
+            showRemove();
+            Toast.makeText(this, "This will permanently remove your trip.", Toast.LENGTH_LONG).show();
         }
         else{
             Toast.makeText(this, "You must select a Trip to remove.", Toast.LENGTH_LONG).show();
         }
     }
     private void showPopUp() {
-    AlertDialog.Builder helpBuilder = new AlertDialog.Builder(this);
-    helpBuilder.setTitle("Create Trip");
-    final EditText input = new EditText(this);
-    input.setSingleLine();
-    helpBuilder.setView(input);
-    //Save button
-    helpBuilder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
-        public void onClick(DialogInterface dialog, int which) {
-            File f = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + input.getText().toString());
-            if (!f.exists()){
+        AlertDialog.Builder helpBuilder = new AlertDialog.Builder(this);
+        helpBuilder.setTitle("Create Trip");
+        final EditText input = new EditText(this);
+        input.setSingleLine();
+        helpBuilder.setView(input);
+        //Save button
+        helpBuilder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                File f = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + input.getText().toString());
+                if (!f.exists()){
 
-            f.mkdir();
-                trips.add(input.getText().toString());
+                    f.mkdir();
+                    trips.add(input.getText().toString());
 
-                try {
-                    selectItem(trips.size() - 1);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    try {
+                        selectItem(trips.size() - 1);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    mDrawerList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.popup_layout, trips));
+
+
                 }
-
-                mDrawerList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.popup_layout, trips));
-
-
+                else{
+                    Toast.makeText(getApplicationContext(), "Trip name exists! Try again.", Toast.LENGTH_LONG).show();
+                }
             }
-            else{
-                Toast.makeText(getApplicationContext(), "Trip name exists! Try again.", Toast.LENGTH_LONG).show();
+        });
+        //Cancel button
+        helpBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Do nothing, just close the dialog box
             }
-        }
-    });
-    //Cancel button
-    helpBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
-            // Do nothing, just close the dialog box
-        }
-    });
-    // Remember, create doesn't show the dialog
-    AlertDialog helpDialog = helpBuilder.create();
-    helpDialog.show();
+        });
+        // Remember, create doesn't show the dialog
+        AlertDialog helpDialog = helpBuilder.create();
+        helpDialog.show();
 
-}
+    }
     private void showRemove() {
         AlertDialog.Builder helpBuilder = new AlertDialog.Builder(this);
         helpBuilder.setTitle("Remove trip " + getActionBar().getTitle()+ "?");
@@ -428,10 +443,10 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
                     writer.println("Trips");
                     writer.close();
 
-                        Utility.nameOfEvent.clear();
-                        Utility.startDates.clear();
+                    Utility.nameOfEvent.clear();
+                    Utility.startDates.clear();
 
-                        refreshCalendar();
+                    refreshCalendar();
                     mDrawerList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.popup_layout, trips));
                     mDrawerLayout.openDrawer(mDrawerList);
 
@@ -456,7 +471,7 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        
+
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.trip, menu);
         return true;
@@ -510,14 +525,15 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
             month.set(GregorianCalendar.MONTH,
                     month.get(GregorianCalendar.MONTH) - 1);
         }
-
+        Log.d("month", Integer.toString(month.get(GregorianCalendar.MONTH)));
+        Log.d("year", Integer.toString(month.get(GregorianCalendar.YEAR)));
     }
 
     protected void showToast(String string) {
         Toast.makeText(this, string, Toast.LENGTH_SHORT).show();
 
     }
-     public void refreshCalendar() {
+    public void refreshCalendar() {
         TextView title = (TextView) findViewById(R.id.title);
 
         adapter.refreshDays();
@@ -526,6 +542,27 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
 
         title.setText(android.text.format.DateFormat.format("MMMM yyyy", month));
     }
+    @Override
+    public void onResume(){
+        super.onResume();
+        File folder = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail);
+        File[] listOfFiles = folder.listFiles();
+        for (int i = 0; i < listOfFiles.length; i++)
+        {
+
+            if (listOfFiles[i].isDirectory())
+            {
+                if (!trips.contains(listOfFiles[i].getName())) {
+                    trips.add(listOfFiles[i].getName());
+                }
+
+            }
+        }
+
+        ArrayAdapter adapter =(ArrayAdapter) mDrawerList.getAdapter();//mDrawerAdapter.notifyDataSetChanged();
+        adapter.notifyDataSetChanged();
+    }
+
     public Runnable calendarUpdater = new Runnable() {
 
         @Override
@@ -540,12 +577,15 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
             Log.d("=====Date ARRAY====", Utility.startDates.toString());
 
             for (int i = 0; i < Utility.startDates.size(); i++) {
+                Log.d("=====Date ARRAY====", Utility.startDates.get(i).toString());
                 itemvalue = df.format(itemmonth.getTime());
                 itemmonth.add(GregorianCalendar.DATE, 1);
                 items.add(Utility.startDates.get(i).toString());
             }
             adapter.setItems(items);
+
             adapter.notifyDataSetChanged();
+            //adapter.clickFocus();
         }
     };
 

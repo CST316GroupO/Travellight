@@ -7,6 +7,6 @@
         android:showAsAction="always|withText"  />
     <item android:id="@+id/action_search"
         android:title="@string/menu_yelp_search"
-        android:icon="@drawable/filter"
+        android:icon="@android:drawable/ic_menu_search"
         android:showAsAction="always|withText"  />
 </menu>
