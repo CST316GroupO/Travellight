@@ -3,12 +3,12 @@
     <item
         android:state_selected="false"
         android:state_pressed="false"
-        android:drawable="@drawable/list_gradient_bg" />
+        android:drawable="@drawable/yelp_gradient_bg" />
 
     <item android:state_pressed="true"
-        android:drawable="@drawable/list_gradient_bg_hover" />
+        android:drawable="@drawable/yelp_gradient_bg_hover" />
 
     <item android:state_selected="true"
         android:state_pressed="false"
-        android:drawable="@drawable/list_gradient_bg_hover" />
+        android:drawable="@drawable/yelp_gradient_bg_hover" />
 </selector>
