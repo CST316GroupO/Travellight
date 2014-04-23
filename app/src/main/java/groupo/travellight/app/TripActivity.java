@@ -252,7 +252,6 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
                 e.printStackTrace();
             }
             if (!t.equals("Trips")){
-                Log.d("================trip name==============","..." + t);
                 try {
                     selectItem(trips.indexOf(t));
                 } catch (IOException e) {
@@ -314,17 +313,10 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
         Utility.nameOfEvent.clear();
         Utility.startDates.clear();
         File f = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + trips.get(position).toString() + "/" + "events.txt");
-        Log.d("================trips POS==============",trips.get(position).toString());
         if (f.exists()){
-            BufferedReader in = new BufferedReader(new FileReader(f));
+            BufferedReader in = new BufferedReader(new FileReader(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + trips.get(position).toString() + "/" + "events.txt"));
 
-            String x = in.readLine();
-            Utility.nameOfEvent.add(x);
-            if (x == null){
-                Log.d("================NULLL==============","...");
-            }
-
-            Log.d("first line","..." + x);
+            Utility.nameOfEvent.add(in.readLine());
             Utility.startDates.add(Utility.getDate(Long.parseLong(in.readLine())));
 
         }
@@ -533,26 +525,6 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
         handler.post(calendarUpdater); // generate some calendar items
 
         title.setText(android.text.format.DateFormat.format("MMMM yyyy", month));
-    }
-    @Override
-    public void onResume(){
-        super.onResume();
-        File folder = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail);
-        File[] listOfFiles = folder.listFiles();
-        for (int i = 0; i < listOfFiles.length; i++)
-        {
-
-            if (listOfFiles[i].isDirectory())
-            {
-                if (!trips.contains(listOfFiles[i].getName())) {
-                    trips.add(listOfFiles[i].getName());
-                }
-
-            }
-        }
-
-        ArrayAdapter adapter =(ArrayAdapter) mDrawerList.getAdapter();//mDrawerAdapter.notifyDataSetChanged();
-        adapter.notifyDataSetChanged();
     }
     public Runnable calendarUpdater = new Runnable() {
 
