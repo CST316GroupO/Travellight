@@ -3,7 +3,10 @@ package groupo.travellight.app;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,6 +23,11 @@ import android.widget.Toast;
 public class PhotoGallery extends Activity {
     Gallery gallery;
     ImageView imageView;
+    //Cursor used to access the results from querying for images on the SD card.
+    private Cursor cursor;
+    //Column index for the Thumbnails Image IDs.
+    private int columnIndex;
+
     //testing if the gallery will show images, will be removed later.
     public Integer[] imageIds = {
             R.drawable.ic_launcher,
@@ -33,18 +41,28 @@ public class PhotoGallery extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_gallery);
 
+        //set up an array of the Thumbnail Image ID column we want
+        String[] projection = {MediaStore.Images.Thumbnails._ID};
+        //Create the cursor pointing to the SD Card
+        cursor = getContentResolver().query(MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI,
+                projection,
+                null,
+                null,
+                MediaStore.Images.Thumbnails.IMAGE_ID);
+        //get the column index of the Thumbnails Image ID
+        columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Thumbnails._ID);
         gallery = (Gallery) findViewById(R.id.gallery_layout);
         gallery.setAdapter(new ImageAdapter(this));
 
         imageView = (ImageView) findViewById(R.id.gallery_display);
 
-        gallery.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        /*gallery.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Toast.makeText(getApplicationContext(), "pic: " + position, Toast.LENGTH_SHORT).show();
                 imageView.setImageResource(imageIds[position]);
             }
-        });
+        });*/
     }
 
     //@Override
@@ -78,7 +96,7 @@ public class PhotoGallery extends Activity {
 
         @Override
         public int getCount() {
-            return imageIds.length;
+            return cursor.getCount();
         }
 
         @Override
@@ -93,10 +111,27 @@ public class PhotoGallery extends Activity {
 
         @Override
         public View getView(int position, View view, ViewGroup viewGroup) {
-            ImageView imageView = new ImageView(context);
-            imageView.setLayoutParams(new Gallery.LayoutParams(150, 100));
-            imageView.setPadding(10, 10, 10, 10);
-            imageView.setImageResource(imageIds[position]);
+            ImageView imageView;
+            if(view == null)
+            {
+                imageView = new ImageView(context);
+                //move cursor to current position
+                cursor.moveToPosition(position);
+                //get the current value for the requested column
+                int imageID = cursor.getInt(columnIndex);
+                //set the content of the image based on the provided URI
+                imageView.setImageURI(Uri.withAppendedPath(MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI, "" + imageID));
+                imageView.setLayoutParams(new Gallery.LayoutParams(150, 100));
+                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                imageView.setPadding(10, 10, 10, 10);
+            }
+            else
+            {
+                imageView = (ImageView) view;
+            }
+            //imageView.setLayoutParams(new Gallery.LayoutParams(150, 100));
+            //imageView.setPadding(10, 10, 10, 10);
+            //imageView.setImageResource(imageIds[position]);
             return imageView;
         }
     }
