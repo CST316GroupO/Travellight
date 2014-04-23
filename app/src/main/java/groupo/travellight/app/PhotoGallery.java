@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -56,13 +57,21 @@ public class PhotoGallery extends Activity {
 
         imageView = (ImageView) findViewById(R.id.gallery_display);
 
-        /*gallery.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        gallery.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                //get the current value for the requested column
+                int imageID = cursor.getInt(columnIndex);
+                //obtain the image URI
+                Uri uri = Uri.withAppendedPath(MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI, Integer.toString(imageID));
+                String url = uri.toString();
+                // set the content of the image based on the image URI
+                int originalImageId = Integer.parseInt(url.substring(url.lastIndexOf("/") + 1, url.length()));
+                Bitmap bitmap = MediaStore.Images.Thumbnails.getThumbnail(getContentResolver(), originalImageId, MediaStore.Images.Thumbnails.MINI_KIND, null);
+                imageView.setImageBitmap(bitmap);
                 Toast.makeText(getApplicationContext(), "pic: " + position, Toast.LENGTH_SHORT).show();
-                imageView.setImageResource(imageIds[position]);
             }
-        });*/
+        });
     }
 
     //@Override
@@ -122,7 +131,7 @@ public class PhotoGallery extends Activity {
                 //set the content of the image based on the provided URI
                 imageView.setImageURI(Uri.withAppendedPath(MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI, "" + imageID));
                 imageView.setLayoutParams(new Gallery.LayoutParams(150, 100));
-                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 imageView.setPadding(10, 10, 10, 10);
             }
             else
