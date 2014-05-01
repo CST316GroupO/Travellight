@@ -39,6 +39,13 @@ public class JSONResponse
      */
     public void parseBusiness() throws JSONException
     {
+        // If json returned null error and return
+        if (JSONString == "")
+        {
+            System.out.println("Yelp returned no results");
+            return;
+        }
+        
         JSONObject jObj = new JSONObject(JSONString); //parse response to JSON object
         JSONArray JSONlist = jObj.getJSONArray("businesses"); //separate to array
         String tmpString;
