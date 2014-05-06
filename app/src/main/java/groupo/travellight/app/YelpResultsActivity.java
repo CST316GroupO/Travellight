@@ -55,7 +55,7 @@ public class YelpResultsActivity extends ActionBarActivity
     private CustomAdapter resultsAdapter, drawerAdapter;
     private ArrayList<HashMap<String, String>> sList = new ArrayList<HashMap<String, String>>();
     private JSONResponse jsonResponse = new JSONResponse();
-
+    private boolean useGPS = false;
     // Drawer variables
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
@@ -69,6 +69,7 @@ public class YelpResultsActivity extends ActionBarActivity
     private String provider;
     private Location location;
     private String cityName = "Seattle";
+    private String query;
 
     // Callback when options menu needs to be created
     @Override
@@ -108,14 +109,19 @@ public class YelpResultsActivity extends ActionBarActivity
         builder.setSingleChoiceItems(cItems, 0, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        
+                        if (which == 1){
+                            useGPS = true;
+                        }
+                        else{
+                            useGPS = false;
+                        }
                     }
                 })
                 // Set the action buttons
                 .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-
+                        new SearchYelp().execute(query);
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -200,7 +206,7 @@ public class YelpResultsActivity extends ActionBarActivity
         // If it was the action search intent search yelp
         if (Intent.ACTION_SEARCH.equals(intent.getAction()))
         {
-            String query = intent.getStringExtra(SearchManager.QUERY);
+            query = intent.getStringExtra(SearchManager.QUERY);
             new SearchYelp().execute(query); //execute new thread and call the query
         }
     }
@@ -293,7 +299,12 @@ public class YelpResultsActivity extends ActionBarActivity
             try
             {
                 TravelLight myApp = (TravelLight) getApplication();
+                if (useGPS){
+                    stringJSON = new Yelp().search(query[0], location.toString());
+                }
+                else{
                 stringJSON = new Yelp().search(query[0], myApp.getCurrentTrip());
+                }
                 jsonResponse.setResponse(stringJSON);
                 jsonResponse.parseBusiness(); //parse JSON data
             }

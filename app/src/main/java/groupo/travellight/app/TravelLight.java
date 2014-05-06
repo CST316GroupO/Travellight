@@ -24,8 +24,7 @@ public class TravelLight extends Application
 {
     private ArrayList<HashMap<String, String>> eventList = new ArrayList<HashMap<String, String>>();
     private HashMap<String,ArrayList<HashMap<String, String>>> calendarList = new  HashMap<String,ArrayList<HashMap<String, String>>>();
-    private String currentTrip = "Nevada";
-
+    private String currentTrip;
     /**
      * Add an event to the current event bag
      * @param map The hashmap of the event to add

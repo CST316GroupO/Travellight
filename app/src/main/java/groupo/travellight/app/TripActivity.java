@@ -459,7 +459,7 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
 
         }
     }
-
+//commit
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView parent, View view, int position, long id) {
@@ -524,6 +524,7 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
         adapter = new CalendarAdapter(this, month);
         gridview.setAdapter(adapter);
         currentTrip = trips.get(position);
+        myApp.setCurrentTrip(currentTrip);
         myApp.loadCalendar(currentTrip, mEmail);
         sList = new ArrayList<HashMap<String, String>>();
         selectedGridDate = null;
