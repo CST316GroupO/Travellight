@@ -60,7 +60,11 @@ public class TravelLight extends Application
     {
         calendarList.put(date, list);
     }
-
+    public void setEventListToCalendar(ArrayList<HashMap<String, String>> list, String date)
+    {
+        calendarList.remove(date);
+        calendarList.put(date, list);
+    }
     /**
      * Gets the currently active trip
      * @return Trip location

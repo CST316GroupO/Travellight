@@ -144,6 +144,7 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
         mDrawerLayout1.setDrawerListener(mDrawerToggle1);
         //drawer 2 end
         rLayout = (ListView) findViewById(R.id.event);
+        rLayout.setOnItemClickListener(new EventItemClickListener());
         month = (GregorianCalendar) GregorianCalendar.getInstance();
         itemmonth = (GregorianCalendar) month.clone();
 
@@ -225,13 +226,14 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
                 previousV = currentV;
                 currentV = v;
                 myApp.loadCalendar(currentTrip, mEmail);
+
                 selectedGridDate = CalendarAdapter.dayString
                         .get(position);
                 if (selectedGridDate != null){
                     if (myApp.GetEventListToCalendar(selectedGridDate) != null){
-                    CustomAdapter drawerAdapter2 = new CustomAdapter(thisActivity, myApp.GetEventListToCalendar(selectedGridDate));
+                        CustomAdapter drawerAdapter2 = new CustomAdapter(thisActivity, myApp.GetEventListToCalendar(selectedGridDate));
 
-                    rLayout.setAdapter(drawerAdapter2);
+                        rLayout.setAdapter(drawerAdapter2);
                     }
                     else{
                         CustomAdapter drawerAdapter2 = new CustomAdapter(thisActivity, new ArrayList<HashMap<String, String>>());
@@ -434,7 +436,29 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
     public void onNavigationDrawerItemSelected(int position) {
 
     }
+    private class EventItemClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView parent, View view, int position, long id) {
+            if (selectedGridDate != null){
 
+                sList = new ArrayList(myApp.GetEventListToCalendar(selectedGridDate));
+                String n = myApp.GetEventListToCalendar(selectedGridDate).get(position).get("KEY_NAME");
+                sList.remove(position);
+                myApp.setEventListToCalendar(sList, selectedGridDate);
+                if (myApp.GetEventListToCalendar(selectedGridDate) != null){
+                    CustomAdapter drawerAdapter2 = new CustomAdapter(thisActivity, myApp.GetEventListToCalendar(selectedGridDate));
+
+                    rLayout.setAdapter(drawerAdapter2);
+                }
+                else{
+                    CustomAdapter drawerAdapter2 = new CustomAdapter(thisActivity, new ArrayList<HashMap<String, String>>());
+                    rLayout.setAdapter(drawerAdapter2);
+                }
+                Toast.makeText(thisActivity, n + " removed.", Toast.LENGTH_LONG).show();
+            }
+
+        }
+    }
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
@@ -497,12 +521,28 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
 
     /** Swaps fragments in the main content view */
     private void selectItem(int position) throws IOException {
+        adapter = new CalendarAdapter(this, month);
+        gridview.setAdapter(adapter);
         currentTrip = trips.get(position);
         myApp.loadCalendar(currentTrip, mEmail);
+        sList = new ArrayList<HashMap<String, String>>();
+        selectedGridDate = null;
+        currentView = -1;
+        adapter.setV(null);
         // Highlight the selected item, update the title, and close the drawer
         mDrawerList.setItemChecked(position, true);
         setTitle(trips.get(position));
         mDrawerLayout.closeDrawer(mDrawerList);
+        if (sList != null){
+            drawerAdapter1 = new CustomAdapter(this, sList);
+
+            rLayout.setAdapter(drawerAdapter1);
+        }
+        else{
+            drawerAdapter1 = new CustomAdapter(thisActivity, new ArrayList<HashMap<String, String>>());
+            rLayout.setAdapter(drawerAdapter1);
+        }
+        mDrawerList1.setAdapter(drawerAdapter1);
         PrintWriter writer = null;
 
         writer = new PrintWriter(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + "recent.txt", "UTF-8");
@@ -611,7 +651,7 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
                 else{
                     Toast.makeText(getApplicationContext(), "Trip name exists! Try again.", Toast.LENGTH_LONG).show();
                 }
-            f = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + input.getText().toString() + "/" + "events_hash.txt");
+            f = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + input.getText().toString() + "/" + "events_hash.txt", "UTF-8 ");
             PrintWriter writer = null;
             try {
                 writer = new PrintWriter(f);
