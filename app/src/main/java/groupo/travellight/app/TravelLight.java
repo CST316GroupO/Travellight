@@ -24,6 +24,7 @@ public class TravelLight extends Application
 {
     private ArrayList<HashMap<String, String>> eventList = new ArrayList<HashMap<String, String>>();
     private HashMap<String,ArrayList<HashMap<String, String>>> calendarList = new  HashMap<String,ArrayList<HashMap<String, String>>>();
+    private String currentTrip = "Nevada";
 
     /**
      * Add an event to the current event bag
@@ -60,6 +61,15 @@ public class TravelLight extends Application
         calendarList.put(date, list);
     }
 
+    /**
+     * Gets the currently active trip
+     * @return Trip location
+     */
+    public String getCurrentTrip()
+    {
+        return currentTrip;
+    }
+
     public ArrayList<HashMap<String, String>> GetEventListToCalendar(String date)
     {
         return calendarList.get(date);
@@ -91,6 +101,7 @@ public class TravelLight extends Application
 }
 
     public void loadCalendar(String tripName, String email) {
+       calendarList = new HashMap<String,ArrayList<HashMap<String, String>>>();
         try {
             FileInputStream fis = new FileInputStream(new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + email + "/" + tripName + "/" + "events_hash.txt"));
             ObjectInputStream is = new ObjectInputStream(fis);
@@ -101,5 +112,14 @@ public class TravelLight extends Application
         {
 
         }
+    }
+
+    /**
+     * Set the currently active trip
+     * @param currentTrip Active trip location
+     */
+    public void setCurrentTrip(String currentTrip)
+    {
+        this.currentTrip = currentTrip;
     }
 }

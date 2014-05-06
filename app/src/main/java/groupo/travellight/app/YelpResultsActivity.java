@@ -1,7 +1,10 @@
 package groupo.travellight.app;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Criteria;
@@ -79,6 +82,7 @@ public class YelpResultsActivity extends ActionBarActivity
         {
             case R.id.action_filter:
                 // call detail activity for clicked entry
+
                 return true;
             case R.id.action_search:
                 onSearchRequested(); //call search dialog
@@ -87,6 +91,48 @@ public class YelpResultsActivity extends ActionBarActivity
                 return super.onOptionsItemSelected(item);
         }
     }
+
+
+   /* @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        mSelectedItems = new ArrayList();  // Where we track the selected items
+        AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
+        // Set the dialog title
+        builder.setTitle(R.string.pick_toppings)
+                // Specify the list array, the items to be selected by default (null for none),
+                // and the listener through which to receive callbacks when items are selected
+                .setMultiChoiceItems(R.array.toppings, null,
+                        new DialogInterface.OnMultiChoiceClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which,
+                                                boolean isChecked) {
+                                if (isChecked) {
+                                    // If the user checked the item, add it to the selected items
+                                    mSelectedItems.add(which);
+                                } else if (mSelectedItems.contains(which)) {
+                                    // Else, if the item is already in the array, remove it
+                                    mSelectedItems.remove(Integer.valueOf(which));
+                                }
+                            }
+                        })
+                        // Set the action buttons
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User clicked OK, so save the mSelectedItems results somewhere
+                        // or return them to the component that opened the dialog
+                        ...
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        ...
+                    }
+                });
+
+        return builder.create();
+    } */
 
     // Callback on creation of results activity
     public void onCreate(Bundle savedInstanceState)
@@ -251,7 +297,8 @@ public class YelpResultsActivity extends ActionBarActivity
         {
             try
             {
-                stringJSON = new Yelp().search(query[0], cityName);
+                TravelLight myApp = (TravelLight) getApplication();
+                stringJSON = new Yelp().search(query[0], myApp.getCurrentTrip());
                 jsonResponse.setResponse(stringJSON);
                 jsonResponse.parseBusiness(); //parse JSON data
             }
