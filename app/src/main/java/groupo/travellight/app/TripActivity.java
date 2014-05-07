@@ -543,7 +543,7 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
             drawerAdapter1 = new CustomAdapter(thisActivity, new ArrayList<HashMap<String, String>>());
             rLayout.setAdapter(drawerAdapter1);
         }
-        mDrawerList1.setAdapter(drawerAdapter1);
+       // mDrawerList1.setAdapter(drawerAdapter1);
         PrintWriter writer = null;
 
         writer = new PrintWriter(getApplicationContext().getFilesDir().getPath().toString() + "/" + mEmail + "/" + "recent.txt", "UTF-8");
