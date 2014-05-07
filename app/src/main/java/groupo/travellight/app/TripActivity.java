@@ -539,6 +539,7 @@ public class TripActivity extends ActionBarActivity implements NavigationDrawerF
 
             rLayout.setAdapter(drawerAdapter1);
         }
+        //commnt
         else{
             drawerAdapter1 = new CustomAdapter(thisActivity, new ArrayList<HashMap<String, String>>());
             rLayout.setAdapter(drawerAdapter1);
